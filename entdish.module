@@ -1,0 +1,210 @@
+<?php
+use Drupal\renderkit\EntityDisplay\EntityDisplayInterface;
+use Drupal\renderkit\EntityDisplay\EntityTitleLink;
+use Drupal\renderkit\EntityDisplay\EntityViewMode;
+
+require_once __DIR__ . '/entdish.field.inc';
+
+/**
+ * Implements hook_views_api().
+ */
+function entdish_views_api() {
+  return array(
+    'api' => 3,
+  );
+}
+
+/**
+ * Implements hook_element_info()
+ *
+ * @return array[]
+ */
+function entdish_element_info() {
+  return array(
+    // Select element to choose an entity display handler.
+    /* @see \Drupal\entdish\Plugin\views\row\EntdishRowPlugin::options_form() */
+    /* @see \Drupal\entdish\Plugin\views\field\EntdishViewsFieldHandler::options_form() */
+    /* @see entdish_field_formatter_settings_form() */
+    'entdish_plugin' => array(
+      '#type' => 'select',
+      '#title' => t('Display plugin'),
+      // Process callback to get the options array.
+      /* @see _entdish_select_process() */
+      '#process' => array('_entdish_select_process'),
+    ),
+  );
+}
+
+/**
+ * Adds the options into an entdish_select element.
+ *
+ * @param array $element
+ *
+ * @return array
+ *
+ * @see entdish_element_info()
+ */
+function _entdish_select_process(array $element) {
+  $element['plugin_id'] = array(
+    '#title' => $element['#title'],
+    '#type' => 'select',
+    '#options' => _entdish_get_options(),
+    '#default_value' => isset($element['#default_value']['plugin_id'])
+      ? $element['#default_value']['plugin_id']
+      : NULL,
+  );
+  return $element;
+}
+
+/**
+ * @param array $settings
+ * @param string $key
+ *
+ * @return \Drupal\renderkit\EntityDisplay\EntityDisplayInterface
+ */
+function _entdish_settings_key_get_handler(array $settings, $key) {
+  return isset($settings[$key])
+    ? _entdish_settings_get_handler($settings[$key])
+    : _entdish_fallback_handler();
+}
+
+/**
+ * @param array $settings
+ *
+ * @return \Drupal\renderkit\EntityDisplay\EntityDisplayInterface
+ */
+function _entdish_settings_get_handler(array $settings) {
+  return isset($settings['plugin_id'])
+    ? _entdish_get_handler($settings['plugin_id'])
+    : _entdish_fallback_handler();
+}
+
+/**
+ * Gets options for a select element to choose a display plugin.
+ *
+ * @return string[]
+ */
+function _entdish_get_options() {
+  $definitions = _entdish_get_definitions();
+  return _entdish_definitions_extract_options($definitions);
+}
+
+/**
+ * @param array[] $definitions
+ *
+ * @return array
+ */
+function _entdish_definitions_extract_options(array $definitions) {
+  $module_info = system_get_info('module_enabled');
+  $options_by_module = array();
+  foreach ($definitions as $id => $definition) {
+    $module = $definition['module'];
+    $options_by_module[$module][$id] = $definition['label'];
+  }
+  $options = $options_by_module['entdish'];
+  unset($options_by_module['entdish']);
+  foreach ($options_by_module as $module => $module_definitions) {
+    $group_base = isset($module_info[$module]['name'])
+      ? $module_info[$module]['name']
+      : $module;
+    $group = $group_base;
+    $i = 1;
+    while (isset($options[$group]) && is_string($options[$group])) {
+      $group = $group_base . ' (' . $i .')';
+      ++$i;
+    }
+    if (!isset($options[$group])) {
+      $options[$group] = $module_definitions;
+    }
+    else {
+      $options[$group] += $module_definitions;
+    }
+  }
+  return $options;
+}
+
+/**
+ * Gets the handler object, or a fallback object for broken / missing handler.
+ *
+ * @param string $plugin_id
+ *   The plugin id.
+ *
+ * @return \Drupal\renderkit\EntityDisplay\EntityDisplayInterface
+ */
+function _entdish_get_handler($plugin_id) {
+  $definition = _entdish_get_definition($plugin_id);
+  if (isset($definition['handler']) && $definition['handler'] instanceof EntityDisplayInterface) {
+    return $definition['handler'];
+  }
+  return _entdish_fallback_handler();
+}
+
+/**
+ * @return \Drupal\renderkit\EntityDisplay\EntityDisplayInterface
+ */
+function _entdish_fallback_handler() {
+  return new EntityTitleLink();
+}
+
+/**
+ * Gets the plugin definition for a given plugin id.
+ *
+ * @param string $id
+ *
+ * @return array|null
+ */
+function _entdish_get_definition($id) {
+  if (empty($id)) {
+    return NULL;
+  }
+  $definitions = _entdish_get_definitions();
+  return isset($definitions[$id])
+    ? $definitions[$id]
+    : NULL;
+}
+
+
+
+/**
+ * Gets all available display plugin definitions.
+ *
+ * @return array[]
+ *   Array of handler definitions.
+ */
+function _entdish_get_definitions() {
+  // @todo Cache this in a static variable.
+  $definitions = array();
+  foreach (module_implements('entdish_info') as $module) {
+    $function = $module . '_entdish_info';
+    if (!function_exists($function)) {
+      continue;
+    }
+    $result = $function();
+    if (!is_array($result)) {
+      continue;
+    }
+    foreach ($result as &$definition) {
+      $definition['module'] = $module;;
+    }
+    $definitions += $result;
+  }
+  return $definitions;
+}
+
+/**
+ * Implements hook_entdish_info().
+ *
+ * @return array[]
+ */
+function entdish_entdish_info() {
+  return array(
+    'entdish_title_link' => array(
+      'label' => t('Title with link.'),
+      'handler' => new EntityTitleLink(),
+    ),
+    'entdish_view_mode_full' => array(
+      'label' => t('View mode: Full'),
+      'handler' => new EntityViewMode('full'),
+    ),
+  );
+}
