@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\entdish;
+namespace Drupal\entdisp;
 
 use Drupal\renderkit\EntityDisplay\EntityDisplayInterface;
 
@@ -43,7 +43,7 @@ class EntityWrapper {
       }
     }
     elseif (is_string($handlerOrId)) {
-      $handler = _entdish_get_handler($handlerOrId);
+      $handler = _entdisp_get_handler($handlerOrId);
       if (!$handler instanceof EntityDisplayInterface) {
         throw new \InvalidArgumentException();
       }
@@ -69,28 +69,4 @@ class EntityWrapper {
       : array();
   }
 
-  /**
-   * @param \Drupal\renderkit\EntityDisplay\EntityDisplayInterface $handler
-   * @param string[] $classes
-   *
-   * @return array
-   */
-  function buildWithContainerClasses(EntityDisplayInterface $handler, array $classes) {
-    $build = $this->build($handler);
-    return array(
-      $build,
-      '#theme_wrappers' => array('container'),
-      '#attributes' => array('class' => $classes),
-    );
-  }
-
-  /**
-   * @param \Drupal\renderkit\EntityDisplay\EntityDisplayInterface $handler
-   * @param string $class
-   *
-   * @return array
-   */
-  function buildWithContainerClass(EntityDisplayInterface $handler, $class) {
-    return $this->buildWithContainerClasses($handler, array($class));
-  }
 }

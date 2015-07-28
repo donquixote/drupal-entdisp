@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\entdish\Plugin\views\field;
+namespace Drupal\entdisp\Plugin\views\field;
 
 abstract class EntityViewsFieldHandlerBase extends \views_handler_field {
 
@@ -28,11 +28,11 @@ abstract class EntityViewsFieldHandlerBase extends \views_handler_field {
     foreach ($rows as $rowIndex => $row) {
       if (isset($builds[$rowIndex])) {
         /** @noinspection PhpUndefinedFieldInspection */
-        $row->entdish_field_builds[$this->position] = $builds[$rowIndex];
+        $row->entdisp_field_builds[$this->position] = $builds[$rowIndex];
       }
       else {
         /** @noinspection PhpUndefinedFieldInspection */
-        unset($row->entdish_field_builds[$this->position]);
+        unset($row->entdisp_field_builds[$this->position]);
       }
     }
   }
@@ -60,8 +60,8 @@ abstract class EntityViewsFieldHandlerBase extends \views_handler_field {
    */
   function render($row) {
     /** @noinspection PhpUndefinedFieldInspection */
-    return isset($row->entdish_field_builds[$this->position])
-      ? drupal_render($row->entdish_field_builds[$this->position])
+    return isset($row->entdisp_field_builds[$this->position])
+      ? drupal_render($row->entdisp_field_builds[$this->position])
       : NULL;
   }
 

@@ -5,7 +5,7 @@
  *
  * @see entity_views_plugins()
  */
-function entdish_views_plugins() {
+function entdisp_views_plugins() {
   // Have views cache the table list for us so it gets
   // cleared at the appropriate times.
   $data = views_cache_get('entity_base_tables', TRUE);
@@ -24,10 +24,10 @@ function entdish_views_plugins() {
   return array(
     'module' => 'entity',
     'row' => array(
-      'entdish' => array(
+      'entdisp' => array(
         'title' => t('Entity display plugin'),
         'help' => t('Renders the entity with one of the available entity display plugins.'),
-        'handler' => \Drupal\entdish\Plugin\views\row\EntdishRowPlugin::class,
+        'handler' => \Drupal\entdisp\Plugin\views\row\EntdispRowPlugin::class,
         'uses fields' => FALSE,
         'uses options' => TRUE,
         'type' => 'normal',
@@ -45,19 +45,19 @@ function entdish_views_plugins() {
  * @param array $data
  *   The definitions to be altered.
  */
-function entdish_views_data_alter(array &$data) {
+function entdisp_views_data_alter(array &$data) {
 
   foreach (entity_get_info() as $entity_type => $info) {
     if (!isset($data['views_entity_' . $entity_type]['rendered_entity'])) {
       continue;
     }
-    $data['views_entity_' . $entity_type]['entdish'] = array(
+    $data['views_entity_' . $entity_type]['entdisp'] = array(
       'title' => t('Entity display plugin'),
       'help' => t(
         'The @entity-type of the current relationship rendered using an entity display plugin.',
         array('@entity-type' => $info['label'])),
       'field' => array(
-        'handler' => \Drupal\entdish\Plugin\views\field\EntdishViewsFieldHandler::class,
+        'handler' => \Drupal\entdisp\Plugin\views\field\EntdispViewsFieldHandler::class,
         'type' => $entity_type,
         // The EntityFieldHandlerHelper treats the 'entity object' data
         // selector as special case for loading the base entity.

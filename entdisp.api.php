@@ -5,6 +5,6 @@
  *
  * @return array[]
  */
-function hook_entdish_info() {
+function hook_entdisp_info() {
 
 }

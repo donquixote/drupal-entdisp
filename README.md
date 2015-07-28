@@ -1,6 +1,6 @@
-# EntDisH ("Entity Display Handler")
+# EntDisP ("Entity Display Handler")
 
-Entdish is a compositional framework for displaying entities.
+Entdisp is a compositional framework for displaying entities.
 
 An "entity display handler" is an object that builds render arrays from entities. This may be for a specific field, an entity title link, or an entire entity displayed in a view mode with entity_view().
 
@@ -8,15 +8,15 @@ Some entity display handler classes take one or more other edhs as constructor a
 
 There is a plugin layer added on top of this, which allows to expose specific edh combinations as "plugins" with a machine key and human name. In the future this API might be extended, so that some plugins may have configuration options.
  
-Entdish does provide views row plugins, and may soon provide an entityreference formatter, panel panes and other things, to make these plugins available whereever an entity or a part of an entity is meant to be displayed.
+Entdisp does provide views row plugins, and may soon provide an entityreference formatter, panel panes and other things, to make these plugins available whereever an entity or a part of an entity is meant to be displayed.
 
 ## Recommended use
 
-The idea is that developers write handler classes for low-level stuff like "wrap something in a div container with a class". And then implement hook_entdish_info() to make some combinations of display handlers available as plugins. E.g. "Frontpage highlight picture", which could be a link wrapper, using an image style decorator, using an image field.
+The idea is that developers write handler classes for low-level stuff like "wrap something in a div container with a class". And then implement hook_entdisp_info() to make some combinations of display handlers available as plugins. E.g. "Frontpage highlight picture", which could be a link wrapper, using an image style decorator, using an image field.
 
 ## Why?
 
-A lot of what EntDisH does could also be achieved with entity view modes, Field UI and Display Suite, or with theme preprocessors and entity or node templates. These systems do have limitations, however.
+A lot of what EntDisP does could also be achieved with entity view modes, Field UI and Display Suite, or with theme preprocessors and entity or node templates. These systems do have limitations, however.
 
 Preprocessors and templates can become messy after some time. Especially, they usually cause your theme and/or modules to depend on site-specific configuration, such as bundles (node types) and field names.
 
@@ -26,7 +26,7 @@ Reuse between bundles, view modes or even between different sites is really limi
 
 ## Background: Existing plugin systems in Drupal 7 and 8
 
-EntDisH is not the only system in Drupal (contrib) that ships with a plugin API.
+EntDisP is not the only system in Drupal (contrib) that ships with a plugin API.
 
 Most of the plugins in Drupal 7 core (field types, field formatters, text filters, image style filters..) are based on info hooks, and definition arrays with procedural callbacks. A lot of the plugins APIs in Drupal 7 contrib are based on ctools. Most or all of the plugin APIs in Drupal 8 are based on the new plugin API in D8 core. While these systems are different, they do have some things in common.
 
@@ -69,15 +69,15 @@ While the concepts described above could be technically independent, there is of
 
 In an architecture like this, sharing of reusable functionality between plugins is often based on inheritance, instead of composition. 
 
-## EntDisH: Separation of Handler vs Plugin
+## EntDisP: Separation of Handler vs Plugin
 
-The EntDisH plugin API has a lot in common with the above, but it does make a strong distinction between "available plugin" and "plugin class". In fact we don't even use the term "plugin class", instead we call it the "(entity display) handler class". (And on a lazy day, we simply say "display handler" and mean both the class and the object/instance). 
+The EntDisP plugin API has a lot in common with the above, but it does make a strong distinction between "available plugin" and "plugin class". In fact we don't even use the term "plugin class", instead we call it the "(entity display) handler class". (And on a lazy day, we simply say "display handler" and mean both the class and the object/instance). 
 
-The system of entity display handlers (handler classes) is entirely independent of the plugin system. A handler class is simply a class that implements `EntityDisplayInterface`. Most of these classes shipped with EntDisH core are very light-weight and do just one thing.
+The system of entity display handlers (handler classes) is entirely independent of the plugin system. A handler class is simply a class that implements `EntityDisplayInterface`. Most of these classes shipped with EntDisP core are very light-weight and do just one thing.
 
-An entity display plugin, on the other hand, is defined with an entry in hook_entdish_info(). These plugin definition arrays define how to obtain the display handler instance for the given machine key (plugin id). But this is in no way a 1:1 thing: The same handler class could be used by more than one plugin definition. Some handler classes might only be used as arguments for other handlers, but not have their own plugin definitions. And one display plugin could use a different handler class depending on some external criteria.
+An entity display plugin, on the other hand, is defined with an entry in hook_entdisp_info(). These plugin definition arrays define how to obtain the display handler instance for the given machine key (plugin id). But this is in no way a 1:1 thing: The same handler class could be used by more than one plugin definition. Some handler classes might only be used as arguments for other handlers, but not have their own plugin definitions. And one display plugin could use a different handler class depending on some external criteria.
 
-In fact, most of the handler classes provided in EntDisH core do not even have a corresponding entry in `hook_entdish_info()`. This may change in future versions, but for now the plugin layer is simply less important than the handler layer.
+In fact, most of the handler classes provided in EntDisP core do not even have a corresponding entry in `hook_entdisp_info()`. This may change in future versions, but for now the plugin layer is simply less important than the handler layer.
 
 And besides, a lot of the handler classes are not meaningful on their own. E.g. an `ImageStyle` requires an `EntityImageInterface` object, to specify where the image should come from. This could be an image field, a user picture, or something else.
 
@@ -85,7 +85,7 @@ And besides, a lot of the handler classes are not meaningful on their own. E.g. 
 
 So, a plugin definition describes how to obtain a plugin handler instance. This could be done by providing a class name and constructor parameters, a factory callback, etc.
 
-However, in the current version of EntDisH, the only way to do so is by directly putting the handler object into the definition, e.g. `array('label' => 'My plugin', 'handler' => new MyHandler())`. Some may say "ouch". But this is the cheapest-to-implement solution. And it allows the IDE to recognize the class name for "find usages" and refactor/rename.
+However, in the current version of EntDisP, the only way to do so is by directly putting the handler object into the definition, e.g. `array('label' => 'My plugin', 'handler' => new MyHandler())`. Some may say "ouch". But this is the cheapest-to-implement solution. And it allows the IDE to recognize the class name for "find usages" and refactor/rename.
 
 ### Serialized objects?
 

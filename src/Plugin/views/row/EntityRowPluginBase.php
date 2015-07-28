@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\entdish\Plugin\views\row;
+namespace Drupal\entdisp\Plugin\views\row;
 
 /**
  * @see \entity_views_plugin_row_entity_view
@@ -64,10 +64,10 @@ abstract class EntityRowPluginBase extends \views_plugin_row {
     $builds = $this->buildMultiple($this->entityType, $entities);
     foreach ($rows as $rowIndex => $row) {
       if (isset($builds[$rowIndex])) {
-        $row->entdish_row_build = $builds[$rowIndex];
+        $row->entdisp_row_build = $builds[$rowIndex];
       }
       else {
-        unset($row->entdish_row_build);
+        unset($row->entdisp_row_build);
       }
     }
   }
@@ -106,8 +106,8 @@ abstract class EntityRowPluginBase extends \views_plugin_row {
    * @return null|string
    */
   public function render($row) {
-    return isset($row->entdish_row_build)
-      ? drupal_render($row->entdish_row_build)
+    return isset($row->entdisp_row_build)
+      ? drupal_render($row->entdisp_row_build)
       : NULL;
   }
 

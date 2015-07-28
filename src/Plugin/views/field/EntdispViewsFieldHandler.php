@@ -1,8 +1,11 @@
 <?php
 
-namespace Drupal\entdish\Plugin\views\row;
+namespace Drupal\entdisp\Plugin\views\field;
 
-class EntdishRowPlugin extends EntityRowPluginBase {
+/**
+ * @see entity_views_handler_field_entity
+ */
+class EntdispViewsFieldHandler extends EntityViewsFieldHandlerBase {
 
   /**
    * @return array
@@ -26,7 +29,7 @@ class EntdishRowPlugin extends EntityRowPluginBase {
     parent::options_form($form, $form_state);
 
     $form['entity_display_plugin'] = array(
-      '#type' => 'entdish_plugin',
+      '#type' => 'entdisp_plugin',
       '#default_value' => $this->options['entity_display_plugin'],
     );
 
@@ -41,10 +44,10 @@ class EntdishRowPlugin extends EntityRowPluginBase {
    *   A render array for each entity.
    */
   protected function buildMultiple($entityType, array $entities) {
-    $plugin_id = isset($this->options['entity_display_plugin']['plugin_id'])
-      ? $this->options['entity_display_plugin']['plugin_id']
-      : 'entdish_title_link';
-    $display = _entdish_get_handler($plugin_id);
+    $settings = isset($this->options['entity_display_plugin'])
+      ? $this->options['entity_display_plugin']
+      : array();
+    $display = _entdisp_settings_get_handler($settings);
     return $display->buildMultiple($entityType, $entities);
   }
 }

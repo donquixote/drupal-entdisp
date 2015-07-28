@@ -4,10 +4,10 @@ use Drupal\renderkit\EntityDisplay\Decorator\EntityDisplayRecursionDetectionDeco
 /**
  * Implements hook_field_formatter_info().
  */
-function entdish_field_formatter_info() {
+function entdisp_field_formatter_info() {
 
   return array(
-    'entdish_entityreference' => array(
+    'entdisp_entityreference' => array(
       'label' => t('Entity display plugin'),
       'description' => t('Display the referenced entities using an entity display plugin.'),
       'field types' => array('entityreference'),
@@ -31,22 +31,17 @@ function entdish_field_formatter_info() {
  *
  * @see entityreference_field_formatter_settings_form()
  */
-function entdish_field_formatter_settings_form(array $field, array $instance, $view_mode, $form, &$form_state) {
+function entdisp_field_formatter_settings_form(array $field, array $instance, $view_mode, $form, &$form_state) {
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
 
   $element = array();
 
-  if ($display['type'] == 'entityreference_entity_view') {
+  if ($display['type'] == 'entdisp_entityreference') {
     $element['entity_display_plugin'] = array(
-      /* @see entdish_element_info() */
-      '#type' => 'entdish_plugin',
+      /* @see entdisp_element_info() */
+      '#type' => 'entdisp_plugin',
       '#default_value' => $settings['entity_display_plugin'],
-    );
-    $element['what'] = array(
-      '#title' => t('Link label to the referenced entity'),
-      '#type' => 'checkbox',
-      '#default_value' => $settings['link'],
     );
   }
 
@@ -60,33 +55,22 @@ function entdish_field_formatter_settings_form(array $field, array $instance, $v
  * @param array $instance
  * @param string $view_mode
  *
- * @return string
+ * @return string|null
  *
  * @see entityreference_field_formatter_settings_summary()
  */
-function entdish_field_formatter_settings_summary($field, $instance, $view_mode) {
+function entdisp_field_formatter_settings_summary($field, $instance, $view_mode) {
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
 
-  $summary = array();
-
-  if ($display['type'] == 'entdish_entityreference') {
-    dpm($settings);
-    return __FUNCTION__;
-  }
-  else {
-    $entity_info = entity_get_info($field['settings']['target_type']);
-
-
-    $view_mode_label = $settings['view_mode'] == 'default' ? t('Default') : $settings['view_mode'];
-    if (isset($entity_info['view modes'][$settings['view_mode']]['label'])) {
-      $view_mode_label = $entity_info['view modes'][$settings['view_mode']]['label'];
+  if ($display['type'] == 'entdisp_entityreference') {
+    $plugin_label = _entdisp_settings_key_get_label($settings, 'entity_display_plugin');
+    if (isset($plugin_label)) {
+      return $plugin_label;
     }
-    $summary[] = t('Rendered as @mode', array('@mode' => $view_mode_label));
-    $summary[] = !empty($settings['links']) ? t('Display links') : t('Do not display links');
   }
 
-  return implode('<br />', $summary);
+  return t('Title with link');
 }
 
 /**
@@ -111,9 +95,9 @@ function entdish_field_formatter_settings_summary($field, $instance, $view_mode)
  *
  * @see entityreference_field_formatter_prepare_view()
  */
-function entdish_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, &$items, $displays) {
+function entdisp_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, &$items, $displays) {
   $display = reset($displays);
-  if ($display['type'] === 'entdish_entityreference') {
+  if ($display['type'] === 'entdisp_entityreference') {
     entityreference_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, $items, $displays);
   }
 }
@@ -143,7 +127,7 @@ function entdish_field_formatter_prepare_view($entity_type, $entities, $field, $
  *   A renderable array for the $items, as an array of child elements keyed
  *   by numeric indexes starting from 0.
  */
-function entdish_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+function entdisp_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
 
   $settings = $display['settings'];
   $target_type = $field['settings']['target_type'];
@@ -157,8 +141,8 @@ function entdish_field_formatter_view($entity_type, $entity, $field, $instance, 
 
   switch ($display['type']) {
 
-    case 'entdish_entityreference':
-      $display = _entdish_settings_key_get_handler($settings, 'entity_display_plugin');
+    case 'entdisp_entityreference':
+      $display = _entdisp_settings_key_get_handler($settings, 'entity_display_plugin');
       $display = new EntityDisplayRecursionDetectionDecorator($display);
       $target_entities = array();
       foreach ($items as $delta => $item) {

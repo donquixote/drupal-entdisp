@@ -1,0 +1,285 @@
+<?php
+use Drupal\entdisp\Discovery\EntdispFactoryInterface;
+use Drupal\renderkit\EntityDisplay\EntityDisplayInterface;
+use Drupal\renderkit\EntityDisplay\EntityTitleLink;
+use Drupal\renderkit\EntityDisplay\EntityViewMode;
+
+require_once __DIR__ . '/entdisp.field.inc';
+
+/**
+ * Implements hook_views_api().
+ */
+function entdisp_views_api() {
+  return array(
+    'api' => 3,
+  );
+}
+
+/**
+ * Implements hook_element_info()
+ *
+ * @return array[]
+ */
+function entdisp_element_info() {
+  return array(
+    // Select element to choose an entity display handler.
+    /* @see \Drupal\entdisp\Plugin\views\row\EntdispRowPlugin::options_form() */
+    /* @see \Drupal\entdisp\Plugin\views\field\EntdispViewsFieldHandler::options_form() */
+    /* @see entdisp_field_formatter_settings_form() */
+    'entdisp_plugin' => array(
+      '#type' => 'select',
+      '#title' => t('Display plugin'),
+      // Process callback to get the options array.
+      /* @see _entdisp_select_process() */
+      '#process' => array('_entdisp_select_process'),
+    ),
+  );
+}
+
+/**
+ * Adds the options into an entdisp_select element.
+ *
+ * @param array $element
+ *
+ * @return array
+ *
+ * @see entdisp_element_info()
+ */
+function _entdisp_select_process(array $element) {
+  $element['plugin_id'] = array(
+    '#title' => $element['#title'],
+    '#type' => 'select',
+    '#options' => _entdisp_get_options(),
+    '#default_value' => isset($element['#default_value']['plugin_id'])
+      ? $element['#default_value']['plugin_id']
+      : NULL,
+  );
+  return $element;
+}
+
+/**
+ * @param array $settings
+ * @param string $key
+ *
+ * @return null|string
+ */
+function _entdisp_settings_key_get_label(array $settings, $key) {
+  return isset($settings[$key])
+    ? _entdisp_settings_get_label($settings[$key])
+    : NULL;
+}
+
+/**
+ * @param array $settings
+ *
+ * @return \Drupal\renderkit\EntityDisplay\EntityDisplayInterface|null|string
+ */
+function _entdisp_settings_get_label(array $settings) {
+  return isset($settings['plugin_id'])
+    ? _entdisp_get_label($settings['plugin_id'])
+    : _entdisp_fallback_handler();
+}
+
+/**
+ * @param string $plugin_id
+ *
+ * @return string|null
+ */
+function _entdisp_get_label($plugin_id) {
+  $definition = _entdisp_get_definition($plugin_id);
+  return isset($definition['label'])
+    ? $definition['label']
+    : NULL;
+}
+
+/**
+ * @param array $settings
+ * @param string $key
+ *
+ * @return \Drupal\renderkit\EntityDisplay\EntityDisplayInterface
+ */
+function _entdisp_settings_key_get_handler(array $settings, $key) {
+  return isset($settings[$key])
+    ? _entdisp_settings_get_handler($settings[$key])
+    : _entdisp_fallback_handler();
+}
+
+/**
+ * @param array $settings
+ *
+ * @return \Drupal\renderkit\EntityDisplay\EntityDisplayInterface
+ */
+function _entdisp_settings_get_handler(array $settings) {
+  return isset($settings['plugin_id'])
+    ? _entdisp_get_handler($settings['plugin_id'])
+    : _entdisp_fallback_handler();
+}
+
+/**
+ * Gets options for a select element to choose a display plugin.
+ *
+ * @return string[]
+ */
+function _entdisp_get_options() {
+  $definitions = _entdisp_get_definitions();
+  return _entdisp_definitions_extract_options($definitions);
+}
+
+/**
+ * @param array[] $definitions
+ *
+ * @return array
+ */
+function _entdisp_definitions_extract_options(array $definitions) {
+  $module_info = system_get_info('module_enabled');
+  $options_by_module = array();
+  foreach ($definitions as $id => $definition) {
+    $module = $definition['module'];
+    $options_by_module[$module][$id] = $definition['label'];
+  }
+  $options = $options_by_module['entdisp'];
+  unset($options_by_module['entdisp']);
+  foreach ($options_by_module as $module => $module_definitions) {
+    $group_base = isset($module_info[$module]['name'])
+      ? $module_info[$module]['name']
+      : $module;
+    $group = $group_base;
+    $i = 1;
+    while (isset($options[$group]) && is_string($options[$group])) {
+      $group = $group_base . ' (' . $i .')';
+      ++$i;
+    }
+    if (!isset($options[$group])) {
+      $options[$group] = $module_definitions;
+    }
+    else {
+      $options[$group] += $module_definitions;
+    }
+  }
+  return $options;
+}
+
+/**
+ * Gets the handler object, or a fallback object for broken / missing handler.
+ *
+ * @param string $plugin_id
+ *   The plugin id.
+ *
+ * @return \Drupal\renderkit\EntityDisplay\EntityDisplayInterface
+ */
+function _entdisp_get_handler($plugin_id) {
+  $definition = _entdisp_get_definition($plugin_id);
+  if (isset($definition['handler']) && $definition['handler'] instanceof EntityDisplayInterface) {
+    return $definition['handler'];
+  }
+  elseif (isset($definition['class'])) {
+    $class = $definition['class'];
+    if (!class_exists($class)) {
+      return _entdisp_fallback_handler();
+    }
+    $handler = new $class();
+    if (!$handler instanceof EntityDisplayInterface) {
+      return _entdisp_fallback_handler();
+    }
+    return $handler;
+  }
+  elseif (isset($definition['factory'])) {
+    $factory = $definition['factory'];
+    if (is_callable($factory)) {
+      $handler = call_user_func($factory);
+      if (!isset($handler) || !is_object($handler) || !$handler instanceof EntityDisplayInterface) {
+        return _entdisp_fallback_handler();
+      }
+      return $handler;
+    }
+  }
+  elseif (isset($definition['factory_factory'])) {
+    $factory_factory = $definition['factory_factory'];
+    if (is_callable($factory_factory)) {
+      $factory = call_user_func($factory_factory);
+    }
+  }
+  elseif (isset($definition['factory_class'])) {
+    $factory_class = $definition['factory_class'];
+    if (class_exists($factory_class)) {
+      $factory = new $factory_class();
+    }
+  }
+  if (isset($factory) && is_object($factory) && $factory instanceof EntdispFactoryInterface) {
+    $handler = $factory->createHandler();
+    if (isset($handler) && is_object($handler) && $handler instanceof EntityDisplayInterface) {
+      return $handler;
+    }
+  }
+  return _entdisp_fallback_handler();
+}
+
+/**
+ * @return \Drupal\renderkit\EntityDisplay\EntityDisplayInterface
+ */
+function _entdisp_fallback_handler() {
+  return new EntityTitleLink();
+}
+
+/**
+ * Gets the plugin definition for a given plugin id.
+ *
+ * @param string $id
+ *
+ * @return array|null
+ */
+function _entdisp_get_definition($id) {
+  if (empty($id)) {
+    return NULL;
+  }
+  $definitions = _entdisp_get_definitions();
+  return isset($definitions[$id])
+    ? $definitions[$id]
+    : NULL;
+}
+
+
+
+/**
+ * Gets all available display plugin definitions.
+ *
+ * @return array[]
+ *   Array of handler definitions.
+ */
+function _entdisp_get_definitions() {
+  // @todo Cache this in a static variable.
+  $definitions = array();
+  foreach (module_implements('entdisp_info') as $module) {
+    $function = $module . '_entdisp_info';
+    if (!function_exists($function)) {
+      continue;
+    }
+    $result = $function();
+    if (!is_array($result)) {
+      continue;
+    }
+    foreach ($result as &$definition) {
+      $definition['module'] = $module;;
+    }
+    $definitions += $result;
+  }
+  return $definitions;
+}
+
+/**
+ * Implements hook_entdisp_info().
+ *
+ * @return array[]
+ */
+function entdisp_entdisp_info() {
+  return array(
+    'entdisp_title_link' => array(
+      'label' => t('Title with link.'),
+      'handler' => new EntityTitleLink(),
+    ),
+    'entdisp_view_mode_full' => array(
+      'label' => t('View mode: Full'),
+      'handler' => new EntityViewMode('full'),
+    ),
+  );
+}
