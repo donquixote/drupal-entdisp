@@ -31,22 +31,20 @@ class EntityWrapper {
    * Useful method for use in node or entity templates.
    *
    * @param \Drupal\renderkit\EntityDisplay\EntityDisplayInterface|string $handlerOrId
+   * @param array $conf
    *
    * @return string
    *   Rendered HTML.
    */
-  function __invoke($handlerOrId) {
+  function __invoke($handlerOrId, $conf = array()) {
     if (is_object($handlerOrId)) {
       $handler = $handlerOrId;
       if (!$handler instanceof EntityDisplayInterface) {
-        throw new \InvalidArgumentException();
+        throw new \InvalidArgumentException('Not a valid entity display handler.');
       }
     }
     elseif (is_string($handlerOrId)) {
-      $handler = _entdisp_get_handler($handlerOrId);
-      if (!$handler instanceof EntityDisplayInterface) {
-        throw new \InvalidArgumentException();
-      }
+      $handler = entdisp()->handlerManager->idConfGetHandler($handlerOrId, $conf);
     }
     else {
       throw new \InvalidArgumentException();
@@ -62,7 +60,7 @@ class EntityWrapper {
    *   A Drupal render array.
    */
   function build(EntityDisplayInterface $handler) {
-    $builds = $handler->buildMultiple($this->type, array($this->entity));
+    $builds = $handler->buildEntities($this->type, array($this->entity));
     return isset($builds[0])
       ? $builds[0]
       // @todo Is array() really a useful fallback?

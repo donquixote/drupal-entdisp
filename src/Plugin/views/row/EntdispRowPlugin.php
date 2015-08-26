@@ -26,7 +26,8 @@ class EntdispRowPlugin extends EntityRowPluginBase {
     parent::options_form($form, $form_state);
 
     $form['entity_display_plugin'] = array(
-      '#type' => 'entdisp_plugin',
+      '#type' => UNIPLUGIN_ELEMENT_TYPE,
+      '#plugin_type' => 'entdisp',
       '#default_value' => $this->options['entity_display_plugin'],
     );
 
@@ -41,10 +42,7 @@ class EntdispRowPlugin extends EntityRowPluginBase {
    *   A render array for each entity.
    */
   protected function buildMultiple($entityType, array $entities) {
-    $plugin_id = isset($this->options['entity_display_plugin']['plugin_id'])
-      ? $this->options['entity_display_plugin']['plugin_id']
-      : 'entdisp_title_link';
-    $display = _entdisp_get_handler($plugin_id);
-    return $display->buildMultiple($entityType, $entities);
+    $display = entdisp()->handlerManager->settingsKeyGetHandler($this->options, 'entity_display_plugin');
+    return $display->buildEntities($entityType, $entities);
   }
 }

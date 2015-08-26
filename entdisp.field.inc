@@ -1,5 +1,5 @@
 <?php
-use Drupal\renderkit\EntityDisplay\Decorator\EntityDisplayRecursionDetectionDecorator;
+use Drupal\renderkit\EntityDisplay\Decorator\RecursionDetectionEntityDisplayDecorator;
 
 /**
  * Implements hook_field_formatter_info().
@@ -39,8 +39,8 @@ function entdisp_field_formatter_settings_form(array $field, array $instance, $v
 
   if ($display['type'] == 'entdisp_entityreference') {
     $element['entity_display_plugin'] = array(
-      /* @see entdisp_element_info() */
-      '#type' => 'entdisp_plugin',
+      '#type' => UNIPLUGIN_ELEMENT_TYPE,
+      '#plugin_type' => 'entdisp',
       '#default_value' => $settings['entity_display_plugin'],
     );
   }
@@ -64,13 +64,10 @@ function entdisp_field_formatter_settings_summary($field, $instance, $view_mode)
   $settings = $display['settings'];
 
   if ($display['type'] == 'entdisp_entityreference') {
-    $plugin_label = _entdisp_settings_key_get_label($settings, 'entity_display_plugin');
-    if (isset($plugin_label)) {
-      return $plugin_label;
-    }
+    return entdisp()->legend->settingsKeyGetLabel($settings, 'entity_display_plugin', TRUE);
   }
 
-  return t('Title with link');
+  return NULL;
 }
 
 /**
@@ -142,13 +139,13 @@ function entdisp_field_formatter_view($entity_type, $entity, $field, $instance, 
   switch ($display['type']) {
 
     case 'entdisp_entityreference':
-      $display = _entdisp_settings_key_get_handler($settings, 'entity_display_plugin');
-      $display = new EntityDisplayRecursionDetectionDecorator($display);
+      $display = entdisp()->handlerManager->settingsKeyGetHandler($settings, 'entity_display_plugin');
+      $display = new RecursionDetectionEntityDisplayDecorator($display);
       $target_entities = array();
       foreach ($items as $delta => $item) {
         $target_entities[$delta] = $item['entity'];
       }
-      return $display->buildMultiple($target_type, $target_entities);
+      return $display->buildEntities($target_type, $target_entities);
   }
 
   return array();

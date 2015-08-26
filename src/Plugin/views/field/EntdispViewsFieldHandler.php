@@ -29,7 +29,8 @@ class EntdispViewsFieldHandler extends EntityViewsFieldHandlerBase {
     parent::options_form($form, $form_state);
 
     $form['entity_display_plugin'] = array(
-      '#type' => 'entdisp_plugin',
+      '#type' => UNIPLUGIN_ELEMENT_TYPE,
+      '#plugin_type' => 'entdisp',
       '#default_value' => $this->options['entity_display_plugin'],
     );
 
@@ -44,10 +45,7 @@ class EntdispViewsFieldHandler extends EntityViewsFieldHandlerBase {
    *   A render array for each entity.
    */
   protected function buildMultiple($entityType, array $entities) {
-    $settings = isset($this->options['entity_display_plugin'])
-      ? $this->options['entity_display_plugin']
-      : array();
-    $display = _entdisp_settings_get_handler($settings);
-    return $display->buildMultiple($entityType, $entities);
+    $display = entdisp()->handlerManager->settingsKeyGetHandler($this->options, 'entity_display_plugin');
+    return $display->buildEntities($entityType, $entities);
   }
 }
