@@ -19,8 +19,8 @@ function entdisp_views_api() {
  * @return \Drupal\entdisp\EntdispHub
  */
 function entdisp() {
-  static $services;
-  return isset($services)
-    ? $services
-    : $services = new \Drupal\entdisp\EntdispHub();
+  static $hub;
+  return isset($hub)
+    ? $hub
+    : $hub = new \Drupal\entdisp\EntdispHub();
 }
