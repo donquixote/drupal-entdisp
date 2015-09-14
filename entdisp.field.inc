@@ -11,7 +11,7 @@ function entdisp_field_formatter_info() {
       'description' => t('Display the referenced entities using an entity display plugin.'),
       'field types' => array('entityreference'),
       'settings' => array(
-        'entity_display_plugin' => NULL,
+        'entity_display_plugin' => array(),
       ),
     ),
   );
