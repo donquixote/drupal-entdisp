@@ -16,69 +16,11 @@ function entdisp_views_api() {
 /**
  * Dependency injection container
  *
- * @return \Drupal\entdisp\DIC\ServiceContainer
+ * @return \Drupal\entdisp\EntdispHub
  */
 function entdisp() {
   static $services;
   return isset($services)
     ? $services
-    : $services = new \Drupal\entdisp\DIC\ServiceContainer();
-}
-
-/**
- * Implements hook_uniplugin_info()
- *
- * @return array[]
- */
-function entdisp_uniplugin_info() {
-  $type = new \Drupal\uniplugin\DIC\PluginTypeServiceContainer('entdisp');
-  return array(
-    'entdisp' => array(
-      'label' => t('Entity display plugin'),
-      'handler' => $type,
-    ),
-  );
-}
-
-/**
- * Implements hook_entdisp_info()
- */
-function entdisp_entdisp_info() {
-
-}
-
-/**
- * Implements hook_menu()
- */
-function entdisp_menu() {
-  return array(
-    'entdisp-test' => array(
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('entdisp_test_form'),
-      'access arguments' => array('administer site configuration'),
-      'type' => MENU_CALLBACK,
-    ),
-  );
-}
-
-/**
- * @return array
- */
-function entdisp_test_form(array $form, array $form_state) {
-  $form['plugin'] = array(
-    '#type' => UNIPLUGIN_ELEMENT_TYPE,
-    '#plugin_type' => 'entdisp',
-    '#default_value' => array(),
-  );
-
-  return $form;
-}
-
-/**
- * Callback element needs only select the portion of the form to be updated.
- * Since #ajax['callback'] return can be HTML or a renderable array (or an
- * array of commands), we can just return a piece of the form.
- */
-function ajax_example_autocheckboxes_callback($form, $form_state) {
-  return $form['checkboxes_fieldset'];
+    : $services = new \Drupal\entdisp\EntdispHub();
 }

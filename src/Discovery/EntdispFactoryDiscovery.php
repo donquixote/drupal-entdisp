@@ -23,7 +23,7 @@ class EntdispFactoryDiscovery {
 
     $path = drupal_get_path('module', $module) . '/src';
     $namespaceOrClass = 'Drupal\\' . $module;
-    if (isset($subnamespace) && '' !== $subnamespace) {
+    if (null !== $subnamespace && '' !== $subnamespace) {
       $path .= '/' . str_replace('\\', '/', $subnamespace);
       $namespaceOrClass .= '\\' . $subnamespace;
     }
@@ -33,15 +33,18 @@ class EntdispFactoryDiscovery {
   /**
    * @param string $path
    * @param string $namespaceOrClass
+   *
+   * @throws \InvalidArgumentException
    */
   function discoverInPath($path, $namespaceOrClass) {
-    if ('/' === substr($path, -1) || '\\' === substr($path, -1)) {
+    $path_lastchar = substr($path, -1);
+    if ('/' === $path_lastchar || '\\' === $path_lastchar) {
       throw new \InvalidArgumentException('Path must be provided without trailing slash or backslash.');
     }
     if ('\\' === substr($namespaceOrClass, -1)) {
       throw new \InvalidArgumentException('Namespace must be provided without trailing backslash.');
     }
-    if (!empty($namespaceOrClass) && '\\' === $namespaceOrClass{0}) {
+    if (!empty($namespaceOrClass) && '\\' === $namespaceOrClass[0]) {
       throw new \InvalidArgumentException('Namespace must be provided without preceding backslash.');
     }
     if (is_file($path)) {
@@ -63,7 +66,7 @@ class EntdispFactoryDiscovery {
    */
   protected function discoverInDir($parentDir, $parentNamespace) {
     foreach (scandir($parentDir) as $candidate) {
-      if ('.' === $candidate{0}) {
+      if ('.' === $candidate[0]) {
         continue;
       }
       $path = $parentDir . $candidate;

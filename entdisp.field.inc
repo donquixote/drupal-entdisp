@@ -1,5 +1,4 @@
 <?php
-use Drupal\renderkit\EntityDisplay\Decorator\RecursionDetectionEntityDisplayDecorator;
 
 /**
  * Implements hook_field_formatter_info().
@@ -34,13 +33,14 @@ function entdisp_field_formatter_info() {
 function entdisp_field_formatter_settings_form(array $field, array $instance, $view_mode, $form, &$form_state) {
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
+  $target_type = $field['settings']['target_type'];
 
   $element = array();
 
   if ($display['type'] == 'entdisp_entityreference') {
     $element['entity_display_plugin'] = array(
-      '#type' => UNIPLUGIN_ELEMENT_TYPE,
-      '#plugin_type' => 'entdisp',
+      '#type' => UIKIT_ELEMENT_TYPE,
+      '#uikit_element_object' => entdisp()->etGetManager($target_type)->getUikitElementType(),
       '#default_value' => $settings['entity_display_plugin'],
     );
   }
@@ -62,9 +62,10 @@ function entdisp_field_formatter_settings_form(array $field, array $instance, $v
 function entdisp_field_formatter_settings_summary($field, $instance, $view_mode) {
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
+  $target_type = $field['settings']['target_type'];
 
-  if ($display['type'] == 'entdisp_entityreference') {
-    return entdisp()->legend->settingsKeyGetLabel($settings, 'entity_display_plugin', TRUE);
+  if ($display['type'] === 'entdisp_entityreference') {
+    return entdisp()->etGetManager($target_type)->settingsGetLabel($settings['entity_display_plugin']);
   }
 
   return NULL;
@@ -139,8 +140,7 @@ function entdisp_field_formatter_view($entity_type, $entity, $field, $instance, 
   switch ($display['type']) {
 
     case 'entdisp_entityreference':
-      $display = entdisp()->handlerManager->settingsKeyGetHandler($settings, 'entity_display_plugin');
-      $display = new RecursionDetectionEntityDisplayDecorator($display);
+      $display = entdisp()->etGetManager($entity_type)->settingsGetEntityDisplay($settings['entity_display_plugin']);
       $target_entities = array();
       foreach ($items as $delta => $item) {
         $target_entities[$delta] = $item['entity'];

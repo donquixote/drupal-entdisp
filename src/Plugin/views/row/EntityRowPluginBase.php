@@ -12,15 +12,7 @@ abstract class EntityRowPluginBase extends \views_plugin_row {
   /**
    * @var string
    */
-  protected $entityType;
-
-  /**
-   * Variable used for rendered entities in the parent class, which was not
-   * properly declared there.
-   *
-   * @var array[]
-   */
-  protected $rendered_content;
+  private $entityType;
 
   /**
    * @param \view $view
@@ -45,7 +37,19 @@ abstract class EntityRowPluginBase extends \views_plugin_row {
       /** @noinspection PhpUndefinedFieldInspection */
       $this->base_field = $info['entity keys']['id'];
     }
+
+    // Let child classes do something based on the entity type.
+    $this->initEntityType($this->entityType);
   }
+
+  /**
+   * Do something based on the entity type.
+   *
+   * Called from $this->init().
+   *
+   * @param string $entityType
+   */
+  abstract protected function initEntityType($entityType);
 
   /**
    * @param object[] $rows

@@ -4,6 +4,45 @@ namespace Drupal\entdisp\Plugin\views\field;
 
 abstract class EntityViewsFieldHandlerBase extends \views_handler_field {
 
+  /**
+   * @var string
+   */
+  private $fieldEntityType;
+
+  /**
+   * Initialize the entity type with the field's entity type.
+   *
+   * @see \entity_views_handler_field_entity::init()
+   *
+   * @param \view $view
+   * @param array $options
+   */
+  public function init(&$view, &$options) {
+    parent::init($view, $options);
+    $fieldEntityType = entity_property_extract_innermost_type($this->definition['type']);
+    if (!$fieldEntityType) {
+      $message = 'Cannot determine field entity type.';
+      watchdog('entdisp', $message);
+      if (user_access('administer site configuration')) {
+        drupal_set_message($message, 'warning');
+      }
+    }
+    $this->fieldEntityType = $fieldEntityType;
+    $this->initEntityType($fieldEntityType);
+  }
+
+  /**
+   * @param string $entityType
+   */
+  abstract protected function initEntityType($entityType);
+
+  /**
+   * @return string
+   */
+  protected function getFieldEntityType() {
+    return $this->fieldEntityType;
+  }
+
   function query() {
     // do nothing -- to override the parent query.
   }
@@ -23,8 +62,15 @@ abstract class EntityViewsFieldHandlerBase extends \views_handler_field {
      * @var object[] $entities
      */
     list($entityType, $entities) = $this->getResultEntities($rows);
+    if ($entityType !== $this->fieldEntityType) {
+      $message = 'Entity type mismatch.';
+      watchdog('entdisp', $message);
+      if (user_access('administer site configuration')) {
+        drupal_set_message($message, 'warning');
+      }
+    }
     // Build the entities.
-    $builds = $this->buildMultiple($entityType, $entities);
+    $builds = $this->buildMultiple($entities);
     foreach ($rows as $rowIndex => $row) {
       if (isset($builds[$rowIndex])) {
         /** @noinspection PhpUndefinedFieldInspection */
@@ -66,19 +112,23 @@ abstract class EntityViewsFieldHandlerBase extends \views_handler_field {
   }
 
   /**
-   * @param string $entityType
    * @param object[] $entities
    *
    * @return array[]
    *   A render array for each entity.
    */
-  abstract protected function buildMultiple($entityType, array $entities);
+  abstract protected function buildMultiple(array $entities);
 
-  protected function doBuildMultiple($entityType, array $entities) {
+  /**
+   * @param object[] $entities
+   *
+   * @return array
+   */
+  protected function doBuildMultiple(array $entities) {
     $builds = array();
     foreach ($entities as $rowIndex => $entity) {
       $builds[$rowIndex] = array(
-        '#markup' => entity_label($entityType, $entity),
+        '#markup' => entity_label($this->fieldEntityType, $entity),
       );
     }
     return $builds;
