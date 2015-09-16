@@ -14,12 +14,19 @@ class EntdispPluginManager implements EntdispPluginManagerInterface {
   private $uniPluginManager;
 
   /**
+   * @var string
+   */
+  private $entityType;
+
+  /**
    * EntdispPluginManager constructor.
    *
    * @param \Drupal\uniplugin\Manager\UniPluginManagerInterface $uniPluginManager
+   * @param string $entityType
    */
-  function __construct(UniPluginManagerInterface $uniPluginManager) {
+  function __construct(UniPluginManagerInterface $uniPluginManager, $entityType) {
     $this->uniPluginManager = $uniPluginManager;
+    $this->entityType = $entityType;
   }
 
   /**
@@ -29,8 +36,12 @@ class EntdispPluginManager implements EntdispPluginManagerInterface {
    * @return \Drupal\uikit\FormElement\UikitElementTypeInterface
    */
   function getUikitElementType() {
-    // Pass-through.
-    return $this->uniPluginManager->getUikitElementType();
+    $et_info = \entity_get_info($this->entityType);
+    $et_label = isset($et_info['label'])
+      ? $et_info['label']
+      : $this->entityType;
+    $title = t('@entity_type display plugin', array('@entity_type' => $et_label));
+    return $this->uniPluginManager->getUikitElementType($title);
   }
 
   /**

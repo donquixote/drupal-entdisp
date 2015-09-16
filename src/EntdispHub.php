@@ -29,7 +29,7 @@ class EntdispHub {
       return $this->managers[$entityType];
     }
     else {
-      return $this->managers[$entityType] = new EntdispPluginManager($this->etGetPluginTypeDIC($entityType)->manager);
+      return $this->managers[$entityType] = new EntdispPluginManager($this->etGetPluginTypeDIC($entityType)->manager, $entityType);
     }
   }
 
