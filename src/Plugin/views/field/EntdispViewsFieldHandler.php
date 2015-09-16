@@ -48,9 +48,6 @@ class EntdispViewsFieldHandler extends EntityViewsFieldHandlerBase {
       '#type' => UIKIT_ELEMENT_TYPE,
       '#uikit_element_object' => $this->entdispManager->getUikitElementType(),
       '#default_value' => $this->options['entity_display_plugin'],
-      // @todo Special handling of ajax for views.
-      /* @see views_ui_edit_form() */
-      '#views' => TRUE,
     );
 
     return $form;
