@@ -21,7 +21,7 @@ class EntdispBrokenEntityDisplay implements EntityDisplayInterface {
   /**
    * @param mixed $invalidHandler
    *
-   * @return EntdispBrokenEntityDisplay
+   * @return $this
    */
   public function setInvalidHandler($invalidHandler) {
     $this->invalidHandler = $invalidHandler;
