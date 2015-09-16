@@ -24,6 +24,14 @@ interface EntdispPluginManagerInterface {
    * @param array $settings
    *   Format: array('plugin_id' => :string, 'plugin_options' => :array)
    *
+   * @return string
+   */
+  function settingsGetSummary(array $settings);
+
+  /**
+   * @param array $settings
+   *   Format: array('plugin_id' => :string, 'plugin_options' => :array)
+   *
    * @return \Drupal\renderkit\EntityDisplay\EntityDisplayInterface
    */
   function settingsGetEntityDisplay(array $settings);

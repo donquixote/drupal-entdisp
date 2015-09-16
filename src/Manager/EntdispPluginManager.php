@@ -58,6 +58,15 @@ class EntdispPluginManager implements EntdispPluginManagerInterface {
 
   /**
    * @param array $settings
+   *
+   * @return string
+   */
+  function settingsGetSummary(array $settings) {
+    return $this->uniPluginManager->settingsGetSummary($settings);
+  }
+
+  /**
+   * @param array $settings
    *   Format: array('plugin_id' => :string, 'plugin_options' => :array)
    *
    * @return \Drupal\renderkit\EntityDisplay\EntityDisplayInterface
@@ -68,4 +77,5 @@ class EntdispPluginManager implements EntdispPluginManagerInterface {
       ? $handler
       : EntdispBrokenEntityDisplay::create()->setInvalidHandler($handler);
   }
+
 }

@@ -65,7 +65,7 @@ function entdisp_field_formatter_settings_summary($field, $instance, $view_mode)
   $target_type = $field['settings']['target_type'];
 
   if ($display['type'] === 'entdisp_entityreference') {
-    return entdisp()->etGetManager($target_type)->settingsGetLabel($settings['entity_display_plugin']);
+    return entdisp()->etGetManager($target_type)->settingsGetSummary($settings['entity_display_plugin']);
   }
 
   return NULL;
