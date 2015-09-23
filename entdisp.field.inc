@@ -40,7 +40,7 @@ function entdisp_field_formatter_settings_form(array $field, array $instance, $v
   if ($display['type'] == 'entdisp_entityreference') {
     $element['entity_display_plugin'] = array(
       '#type' => UIKIT_ELEMENT_TYPE,
-      '#uikit_element_object' => entdisp()->etGetManager($target_type)->getUikitElementType(),
+      UIKIT_K_TYPE_OBJECT => entdisp()->etGetManager($target_type)->getUikitElementType(),
       '#default_value' => $settings['entity_display_plugin'],
     );
   }

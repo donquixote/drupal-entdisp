@@ -36,13 +36,6 @@ abstract class EntityViewsFieldHandlerBase extends \views_handler_field {
    */
   abstract protected function initEntityType($entityType);
 
-  /**
-   * @return string
-   */
-  protected function getFieldEntityType() {
-    return $this->fieldEntityType;
-  }
-
   function query() {
     // do nothing -- to override the parent query.
   }
@@ -70,7 +63,7 @@ abstract class EntityViewsFieldHandlerBase extends \views_handler_field {
       }
     }
     // Build the entities.
-    $builds = $this->buildMultiple($entities);
+    $builds = $this->buildMultiple($entityType, $entities);
     foreach ($rows as $rowIndex => $row) {
       if (isset($builds[$rowIndex])) {
         /** @noinspection PhpUndefinedFieldInspection */
@@ -112,26 +105,12 @@ abstract class EntityViewsFieldHandlerBase extends \views_handler_field {
   }
 
   /**
+   * @param string $entityType
    * @param object[] $entities
    *
    * @return array[]
    *   A render array for each entity.
    */
-  abstract protected function buildMultiple(array $entities);
-
-  /**
-   * @param object[] $entities
-   *
-   * @return array
-   */
-  protected function doBuildMultiple(array $entities) {
-    $builds = array();
-    foreach ($entities as $rowIndex => $entity) {
-      $builds[$rowIndex] = array(
-        '#markup' => entity_label($this->fieldEntityType, $entity),
-      );
-    }
-    return $builds;
-  }
+  abstract protected function buildMultiple($entityType, array $entities);
 
 }

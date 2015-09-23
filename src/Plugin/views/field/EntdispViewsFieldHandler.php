@@ -46,11 +46,18 @@ class EntdispViewsFieldHandler extends EntityViewsFieldHandlerBase {
 
     $form['entity_display_plugin'] = array(
       '#type' => UIKIT_ELEMENT_TYPE,
-      '#uikit_element_object' => $this->entdispManager->getUikitElementType(),
+      UIKIT_K_TYPE_OBJECT => $this->entdispManager->getUikitElementType(),
       '#default_value' => $this->options['entity_display_plugin'],
     );
 
     return $form;
+  }
+
+  /**
+   * Returns the summary of the settings in the display.
+   */
+  function summary_title() {
+    return $this->entdispManager->settingsGetSummary($this->options['entity_display_plugin']);
   }
 
   /**
@@ -59,8 +66,8 @@ class EntdispViewsFieldHandler extends EntityViewsFieldHandlerBase {
    * @return array[]
    *   A render array for each entity.
    */
-  protected function buildMultiple(array $entities) {
+  protected function buildMultiple($entityType, array $entities) {
     $display = $this->entdispManager->settingsGetEntityDisplay($this->options['entity_display_plugin']);
-    return $display->buildEntities($this->getFieldEntityType(), $entities);
+    return $display->buildEntities($entityType, $entities);
   }
 }

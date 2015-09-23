@@ -4,12 +4,12 @@ namespace Drupal\entdisp\Manager;
 
 use Drupal\entdisp\EntityDisplay\EntdispBrokenEntityDisplay;
 use Drupal\renderkit\EntityDisplay\EntityDisplayInterface;
-use Drupal\uniplugin\Manager\UniPluginManagerInterface;
+use Drupal\uniplugin\Manager\InternalUniManagerInterface;
 
 class EntdispPluginManager implements EntdispPluginManagerInterface {
 
   /**
-   * @var \Drupal\uniplugin\Manager\UniPluginManagerInterface
+   * @var \Drupal\uniplugin\Manager\InternalUniManagerInterface
    */
   private $uniPluginManager;
 
@@ -21,10 +21,10 @@ class EntdispPluginManager implements EntdispPluginManagerInterface {
   /**
    * EntdispPluginManager constructor.
    *
-   * @param \Drupal\uniplugin\Manager\UniPluginManagerInterface $uniPluginManager
+   * @param \Drupal\uniplugin\Manager\InternalUniManagerInterface $uniPluginManager
    * @param string $entityType
    */
-  function __construct(UniPluginManagerInterface $uniPluginManager, $entityType) {
+  function __construct(InternalUniManagerInterface $uniPluginManager, $entityType) {
     $this->uniPluginManager = $uniPluginManager;
     $this->entityType = $entityType;
   }
@@ -42,18 +42,6 @@ class EntdispPluginManager implements EntdispPluginManagerInterface {
       : $this->entityType;
     $title = t('@entity_type display plugin', array('@entity_type' => $et_label));
     return $this->uniPluginManager->getUikitElementType($title);
-  }
-
-  /**
-   * @param array $settings
-   *   Format: array('plugin_id' => :string, 'plugin_options' => :array)
-   *
-   * @return string
-   *   A label describing the plugin.
-   */
-  function settingsGetLabel(array $settings) {
-    // Pass-through.
-    return $this->uniPluginManager->settingsGetLabel($settings);
   }
 
   /**
@@ -77,5 +65,4 @@ class EntdispPluginManager implements EntdispPluginManagerInterface {
       ? $handler
       : EntdispBrokenEntityDisplay::create()->setInvalidHandler($handler);
   }
-
 }

@@ -6,11 +6,20 @@
 function entdisp_example_menu() {
   return array(
     'entdisp-example-form' => array(
+      '#title' => 'Entdisp example form',
       'page callback' => 'drupal_get_form',
       /* @see entdisp_example_form() */
       'page arguments' => array('entdisp_example_form'),
       'access arguments' => array('administer site configuration'),
       'type' => MENU_CALLBACK,
+    ),
+    'node/%node/entdisp-example' => array(
+      'page callback' => 'drupal_get_form',
+      'title' => 'Entdisp example',
+      /* @see entdisp_example_form() */
+      'page arguments' => array('entdisp_example_node_demo_form', 1),
+      'access arguments' => array('administer site configuration'),
+      'type' => MENU_LOCAL_TASK,
     ),
   );
 }
@@ -24,9 +33,51 @@ function entdisp_example_menu() {
 function entdisp_example_form(array $form, array $form_state) {
   $form['plugin'] = array(
     '#type' => UIKIT_ELEMENT_TYPE,
-    '#uikit_element_object' => entdisp()->etGetManager('node')->getUikitElementType(),
+    UIKIT_K_TYPE_OBJECT => entdisp()->etGetManager('node')->getUikitElementType(),
     '#default_value' => array(),
   );
 
   return $form;
+}
+
+/**
+ * @param array $form
+ * @param array $form_state
+ *
+ * @return array
+ */
+function entdisp_example_node_demo_form(array $form, array $form_state, $node) {
+
+  $settings = isset($form_state['values'])
+    ? $form_state['values']
+    : array();
+
+  $form['plugin'] = array(
+    '#type' => UIKIT_ELEMENT_TYPE,
+    UIKIT_K_TYPE_OBJECT => entdisp()->etGetManager('node')->getUikitElementType(),
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Show'),
+  );
+
+  if (isset($_GET['plugin'])) {
+    $settings = $_GET['plugin'];
+    $form['plugin']['#default_value'] = $settings;
+    $display = entdisp()->etGetManager('node')->settingsGetEntityDisplay($settings);
+    $build = $display->buildEntity('node', $node);
+    $form['demo'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Node displayed with this display plugin.'),
+      'content' => $build,
+    );
+  }
+
+  return $form;
+}
+
+function entdisp_example_node_demo_form_submit(array &$form, array &$form_state) {
+  $options['query']['plugin'] = $form_state['values']['plugin'];
+  drupal_goto($_GET['q'], $options);
 }

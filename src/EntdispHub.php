@@ -15,7 +15,7 @@ class EntdispHub {
 
   /**
    * @var \Drupal\uniplugin\PluginTypeDIC\DefaultPluginTypeServiceContainer[]
-   *   Format: $[$entityType] = $pluginType
+   *   Format: $[$entityType] = $pluginTypeDIC
    */
   private $uniPluginTypeDICs = array();
 
