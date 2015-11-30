@@ -38,11 +38,7 @@ function entdisp_field_formatter_settings_form(array $field, array $instance, $v
   $element = array();
 
   if ($display['type'] == 'entdisp_entityreference') {
-    $element['entity_display_plugin'] = array(
-      '#type' => UIKIT_ELEMENT_TYPE,
-      UIKIT_K_TYPE_OBJECT => entdisp()->etGetManager($target_type)->getUikitElementType(),
-      '#default_value' => $settings['entity_display_plugin'],
-    );
+    $element['entity_display_plugin'] = entdisp()->etGetDisplayManager($target_type)->confGetForm($settings['entity_display_plugin']);
   }
 
   return $element;
@@ -65,7 +61,7 @@ function entdisp_field_formatter_settings_summary($field, $instance, $view_mode)
   $target_type = $field['settings']['target_type'];
 
   if ($display['type'] === 'entdisp_entityreference') {
-    return entdisp()->etGetManager($target_type)->settingsGetSummary($settings['entity_display_plugin']);
+    return entdisp()->etGetDisplayManager($target_type)->confGetSummary($settings['entity_display_plugin']);
   }
 
   return NULL;
@@ -140,7 +136,7 @@ function entdisp_field_formatter_view($entity_type, $entity, $field, $instance, 
   switch ($display['type']) {
 
     case 'entdisp_entityreference':
-      $display = entdisp()->etGetManager($entity_type)->settingsGetEntityDisplay($settings['entity_display_plugin']);
+      $display = entdisp()->etGetDisplayManager($entity_type)->confGetEntityDisplay($settings['entity_display_plugin']);
       $target_entities = array();
       foreach ($items as $delta => $item) {
         $target_entities[$delta] = $item['entity'];

@@ -3,51 +3,66 @@
 
 namespace Drupal\entdisp;
 
-use Drupal\entdisp\Manager\EntdispPluginManager;
-use Drupal\uniplugin\PluginTypeDIC\DefaultPluginTypeServiceContainer;
+use Drupal\entdisp\Manager\EntdispManager;
+use Drupal\renderkit\EntityDisplay\EntityDisplayInterface;
 
 class EntdispHub {
 
   /**
-   * @var \Drupal\entdisp\Manager\EntdispPluginManagerInterface[]
+   * @var \Drupal\entdisp\Manager\EntdispManagerInterface[]
    */
-  private $managers = array();
+  private $displayManagersByEt = array();
 
   /**
-   * @var \Drupal\uniplugin\PluginTypeDIC\DefaultPluginTypeServiceContainer[]
-   *   Format: $[$entityType] = $pluginTypeDIC
+   * @var \Drupal\entdisp\Manager\EntdispManagerInterface[]
    */
-  private $uniPluginTypeDICs = array();
+  private $displayManagersByEtBundle = array();
 
   /**
    * @param string $entityType
    *
-   * @return \Drupal\entdisp\Manager\EntdispPluginManagerInterface
+   * @return \Drupal\entdisp\Manager\EntdispManagerInterface
    */
-  function etGetManager($entityType) {
-    if (array_key_exists($entityType, $this->managers)) {
-      return $this->managers[$entityType];
-    }
-    else {
-      return $this->managers[$entityType] = new EntdispPluginManager($this->etGetPluginTypeDIC($entityType)->manager, $entityType);
-    }
+  function etGetDisplayManager($entityType) {
+    return array_key_exists($entityType, $this->displayManagersByEt)
+      ? $this->displayManagersByEt[$entityType]
+      : $this->displayManagersByEt[$entityType] = $this->etCreateDisplayManager($entityType);
   }
 
   /**
-   * @param string $entity_type
+   * @param string $entityType
+   * @param string $bundleName
    *
-   * @return \Drupal\uniplugin\PluginTypeDIC\DefaultPluginTypeServiceContainer|null
+   * @return \Drupal\entdisp\Manager\EntdispManager|\Drupal\entdisp\Manager\EntdispManagerInterface
    */
-  private function etGetPluginTypeDIC($entity_type) {
-    if (array_key_exists($entity_type, $this->uniPluginTypeDICs)) {
-      return $this->uniPluginTypeDICs[$entity_type];
-    }
-    else {
-      /* @see hook_entdisp_info() */
-      return $this->uniPluginTypeDICs[$entity_type] = new DefaultPluginTypeServiceContainer(
-        'entdisp_info',
-        array($entity_type));
-    }
+  function etBundleGetDisplayManager($entityType, $bundleName) {
+    $key = $entityType . ':' . $bundleName;
+    return array_key_exists($key, $this->displayManagersByEtBundle)
+      ? $this->displayManagersByEtBundle[$key]
+      : $this->displayManagersByEtBundle[$key] = $this->etBundleCreateDisplayManager($entityType, $bundleName);
+  }
+
+  /**
+   * @param string $entityType
+   *
+   * @return \Drupal\entdisp\Manager\EntdispManager
+   */
+  private function etCreateDisplayManager($entityType) {
+    $context = etplugin()->etGetContext($entityType);
+    $handlerMap = uniplugin()->interfaceContextGetHandlerMap(EntityDisplayInterface::class, $context);
+    return new EntdispManager($handlerMap);
+  }
+
+  /**
+   * @param string $entityType
+   * @param string $bundleName
+   *
+   * @return \Drupal\entdisp\Manager\EntdispManager
+   */
+  private function etBundleCreateDisplayManager($entityType, $bundleName) {
+    $context = etplugin()->etBundleGetContext($entityType, $bundleName);
+    $handlerMap = uniplugin()->interfaceContextGetHandlerMap(EntityDisplayInterface::class, $context);
+    return new EntdispManager($handlerMap);
   }
 
 } 

@@ -31,11 +31,8 @@ function entdisp_example_menu() {
  * @return array
  */
 function entdisp_example_form(array $form, array $form_state) {
-  $form['plugin'] = array(
-    '#type' => UIKIT_ELEMENT_TYPE,
-    UIKIT_K_TYPE_OBJECT => entdisp()->etGetManager('node')->getUikitElementType(),
-    '#default_value' => array(),
-  );
+
+  $form['plugin'] = entdisp()->etGetDisplayManager('node')->confGetForm(array());
 
   return $form;
 }
@@ -43,40 +40,62 @@ function entdisp_example_form(array $form, array $form_state) {
 /**
  * @param array $form
  * @param array $form_state
+ * @param object $node
  *
  * @return array
  */
 function entdisp_example_node_demo_form(array $form, array $form_state, $node) {
 
-  $settings = isset($form_state['values'])
-    ? $form_state['values']
-    : array();
+  if (isset($_GET['plugin'])) {
+    $settings = $_GET['plugin'];
+  }
+  elseif (isset($form_state['values']['plugin'])) {
+    $settings = $form_state['values']['plugin'];
+  }
+  else {
+    $settings = array();
+  }
 
-  $form['plugin'] = array(
-    '#type' => UIKIT_ELEMENT_TYPE,
-    UIKIT_K_TYPE_OBJECT => entdisp()->etGetManager('node')->getUikitElementType(),
-  );
+  $displayManager = entdisp()->etBundleGetDisplayManager('node', $node->type);
 
-  $form['submit'] = array(
+  $form['plugin'] = $displayManager->confGetForm($settings);
+
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Show'),
   );
+  $form['actions']['submit_invalid'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit invalid.'),
+  );
 
-  if (isset($_GET['plugin'])) {
-    $settings = $_GET['plugin'];
-    $form['plugin']['#default_value'] = $settings;
-    $display = entdisp()->etGetManager('node')->settingsGetEntityDisplay($settings);
-    $build = $display->buildEntity('node', $node);
+  if ($settings) {
+    $entityDisplay = $displayManager->confGetEntityDisplay($settings);
     $form['demo'] = array(
       '#type' => 'fieldset',
       '#title' => t('Node displayed with this display plugin.'),
-      'content' => $build,
+      'content' => $entityDisplay->buildEntity('node', $node),
     );
   }
 
   return $form;
 }
 
+/**
+ * @param array $form
+ * @param array $form_state
+ */
+function entdisp_example_node_demo_form_validate(array &$form, array &$form_state) {
+  if ('edit-submit-invalid' === $form_state['triggering_element']['#id']) {
+    form_set_error('submit_invalid', t('The form was intentionally submitted as invalid.'));
+  }
+}
+
+/**
+ * @param array $form
+ * @param array $form_state
+ */
 function entdisp_example_node_demo_form_submit(array &$form, array &$form_state) {
   $options['query']['plugin'] = $form_state['values']['plugin'];
   drupal_goto($_GET['q'], $options);

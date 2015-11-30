@@ -6,3 +6,4 @@ dependencies[] = xautoload
 dependencies[] = entity
 dependencies[] = renderkit
 dependencies[] = uniplugin
+dependencies[] = uikit

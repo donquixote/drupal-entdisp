@@ -5,7 +5,7 @@ namespace Drupal\entdisp\Plugin\views\row;
 class EntdispRowPlugin extends EntityRowPluginBase {
 
   /**
-   * @var \Drupal\entdisp\Manager\EntdispPluginManagerInterface
+   * @var \Drupal\entdisp\Manager\EntdispManagerInterface
    */
   private $entdispManager;
 
@@ -17,7 +17,7 @@ class EntdispRowPlugin extends EntityRowPluginBase {
    * @param string $entityType
    */
   protected function initEntityType($entityType) {
-    $this->entdispManager = entdisp()->etGetManager($entityType);
+    $this->entdispManager = entdisp()->etGetDisplayManager($entityType);
   }
 
   /**
@@ -41,11 +41,27 @@ class EntdispRowPlugin extends EntityRowPluginBase {
   public function options_form(&$form, &$form_state) {
     parent::options_form($form, $form_state);
 
-    $form['entity_display_plugin'] = array(
-      '#type' => UIKIT_ELEMENT_TYPE,
-      UIKIT_K_TYPE_OBJECT => $this->entdispManager->getUikitElementType(),
-      '#default_value' => $this->options['entity_display_plugin'],
-    );
+    if (isset($form_state['values']['row_options']['entity_display_plugin'])) {
+      $conf = $form_state['values']['row_options']['entity_display_plugin'];
+    }
+    elseif (isset($form_state['input']['row_options']['entity_display_plugin'])) {
+      $conf = $form_state['input']['row_options']['entity_display_plugin'];
+    }
+    else {
+      $conf = $this->options['entity_display_plugin'];
+    }
+
+    // Force the views UI height..
+    if (FALSE) {
+      $form['placeholder'] = array(
+        '#type' => 'container',
+        '#attributes' => array(
+          'style' => 'min-height: 600px; width: 10px; float: left; margin-right: -10px;',
+        ),
+      );
+    }
+
+    $form['entity_display_plugin'] = $this->entdispManager->confGetForm($conf);
 
     return $form;
   }
@@ -54,7 +70,7 @@ class EntdispRowPlugin extends EntityRowPluginBase {
    * Returns the summary of the settings in the display.
    */
   function summary_title() {
-    return $this->entdispManager->settingsGetSummary($this->options['entity_display_plugin']);
+    return $this->entdispManager->confGetSummary($this->options['entity_display_plugin']);
   }
 
   /**
@@ -65,7 +81,7 @@ class EntdispRowPlugin extends EntityRowPluginBase {
    *   A render array for each entity.
    */
   protected function buildMultiple($entityType, array $entities) {
-    $display = $this->entdispManager->settingsGetEntityDisplay($this->options['entity_display_plugin']);
+    $display = $this->entdispManager->confGetEntityDisplay($this->options['entity_display_plugin']);
     return $display->buildEntities($entityType, $entities);
   }
 }

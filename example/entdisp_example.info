@@ -2,4 +2,6 @@ name = EntDisP Example
 description = Example module for EntDisP (Entity Display Plugin)
 core = 7.x
 
+package = Example modules
+
 dependencies[] = entdisp
