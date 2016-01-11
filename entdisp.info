@@ -3,7 +3,6 @@ description = Exposes renderkit entity display handlers as plugins.
 core = 7.x
 
 dependencies[] = xautoload
-dependencies[] = entity
 dependencies[] = renderkit
-dependencies[] = uniplugin
-dependencies[] = uikit
+dependencies[] = cfrplugin
+dependencies[] = etcfrcontext

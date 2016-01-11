@@ -1,5 +1,10 @@
 <?php
 
+use Drupal\entdisp\Hub\EntdispHub;
+
+define('ENTDISP_PLUGIN_KEY', 'entity_display_plugin');
+define('ENTDISP_ENTITYREFERENCE_FORMATTER', 'entdisp_entityreference');
+
 require_once __DIR__ . '/entdisp.field.inc';
 
 /**
@@ -16,11 +21,11 @@ function entdisp_views_api() {
 /**
  * Dependency injection container
  *
- * @return \Drupal\entdisp\EntdispHub
+ * @return \Drupal\entdisp\Hub\EntdispHubInterface
  */
 function entdisp() {
   static $hub;
   return isset($hub)
     ? $hub
-    : $hub = new \Drupal\entdisp\EntdispHub();
+    : $hub = EntdispHub::create();
 }

@@ -1,13 +1,17 @@
 <?php
 
-namespace Drupal\entdisp\Plugin\views\row;
+namespace Drupal\entdisp\CtoolsPlugin\views\row;
 
-class EntdispRowPlugin extends EntityRowPluginBase {
+use Drupal\cfrapi\SummaryBuilder\SummaryBuilder_Static;
+
+class EntdispViewsRowPlugin extends EntityViewsRowPluginBase {
 
   /**
-   * @var \Drupal\entdisp\Manager\EntdispManagerInterface
+   * @var \Drupal\entdisp\EntdispConfigurator\EntdispConfiguratorInterface
    */
   private $entdispManager;
+
+  const ENTDISP_PLUGIN_KEY = 'entity_display_plugin';
 
   /**
    * Do something based on the entity type.
@@ -26,7 +30,7 @@ class EntdispRowPlugin extends EntityRowPluginBase {
    */
   public function option_definition() {
     $options = parent::option_definition();
-    $options['entity_display_plugin'] = array('default' => array());
+    $options[ENTDISP_PLUGIN_KEY] = array('default' => array());
     return $options;
   }
 
@@ -41,14 +45,14 @@ class EntdispRowPlugin extends EntityRowPluginBase {
   public function options_form(&$form, &$form_state) {
     parent::options_form($form, $form_state);
 
-    if (isset($form_state['values']['row_options']['entity_display_plugin'])) {
-      $conf = $form_state['values']['row_options']['entity_display_plugin'];
+    if (isset($form_state['values']['row_options'][ENTDISP_PLUGIN_KEY])) {
+      $conf = $form_state['values']['row_options'][ENTDISP_PLUGIN_KEY];
     }
-    elseif (isset($form_state['input']['row_options']['entity_display_plugin'])) {
-      $conf = $form_state['input']['row_options']['entity_display_plugin'];
+    elseif (isset($form_state['input']['row_options'][ENTDISP_PLUGIN_KEY])) {
+      $conf = $form_state['input']['row_options'][ENTDISP_PLUGIN_KEY];
     }
     else {
-      $conf = $this->options['entity_display_plugin'];
+      $conf = $this->options[ENTDISP_PLUGIN_KEY];
     }
 
     // Force the views UI height..
@@ -61,7 +65,7 @@ class EntdispRowPlugin extends EntityRowPluginBase {
       );
     }
 
-    $form['entity_display_plugin'] = $this->entdispManager->confGetForm($conf);
+    $form[ENTDISP_PLUGIN_KEY] = $this->entdispManager->confGetForm($conf, t('Row entity display'));
 
     return $form;
   }
@@ -70,7 +74,7 @@ class EntdispRowPlugin extends EntityRowPluginBase {
    * Returns the summary of the settings in the display.
    */
   function summary_title() {
-    return $this->entdispManager->confGetSummary($this->options['entity_display_plugin']);
+    return $this->entdispManager->confGetSummary($this->options[ENTDISP_PLUGIN_KEY], new SummaryBuilder_Static());
   }
 
   /**
@@ -81,7 +85,7 @@ class EntdispRowPlugin extends EntityRowPluginBase {
    *   A render array for each entity.
    */
   protected function buildMultiple($entityType, array $entities) {
-    $display = $this->entdispManager->confGetEntityDisplay($this->options['entity_display_plugin']);
+    $display = $this->entdispManager->confGetEntityDisplay($this->options[ENTDISP_PLUGIN_KEY]);
     return $display->buildEntities($entityType, $entities);
   }
 }

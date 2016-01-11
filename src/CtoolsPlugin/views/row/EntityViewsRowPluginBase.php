@@ -1,13 +1,13 @@
 <?php
 
-namespace Drupal\entdisp\Plugin\views\row;
+namespace Drupal\entdisp\CtoolsPlugin\views\row;
 
 /**
  * @see \entity_views_plugin_row_entity_view
  * @see \views_plugin_ds_entity_view
  * @see \views_plugin_row_node_view
  */
-abstract class EntityRowPluginBase extends \views_plugin_row {
+abstract class EntityViewsRowPluginBase extends \views_plugin_row {
 
   /**
    * @var string

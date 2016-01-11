@@ -1,16 +1,18 @@
 <?php
 
-namespace Drupal\entdisp\Plugin\views\field;
+namespace Drupal\entdisp\CtoolsPlugin\views\field;
+
+use Drupal\entdisp\Util\EntityUtil;
 
 abstract class EntityViewsFieldHandlerBase extends \views_handler_field {
 
   /**
-   * @var string
+   * @var string|null
    */
   private $fieldEntityType;
 
   /**
-   * Initialize the entity type with the field's entity type.
+   * Initializes the entity type with the field's entity type.
    *
    * @see \entity_views_handler_field_entity::init()
    *
@@ -19,7 +21,7 @@ abstract class EntityViewsFieldHandlerBase extends \views_handler_field {
    */
   public function init(&$view, &$options) {
     parent::init($view, $options);
-    $fieldEntityType = entity_property_extract_innermost_type($this->definition['type']);
+    $fieldEntityType = EntityUtil::entityPropertyExtractInnermostType($this->definition['type']);
     if (!$fieldEntityType) {
       $message = 'Cannot determine field entity type.';
       watchdog('entdisp', $message);
@@ -41,7 +43,7 @@ abstract class EntityViewsFieldHandlerBase extends \views_handler_field {
   }
 
   /**
-   * Run before any fields are rendered.
+   * Runs before any fields are rendered.
    *
    * This gives the handlers some time to set up before any handler has
    * been rendered.

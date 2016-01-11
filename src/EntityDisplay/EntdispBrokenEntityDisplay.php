@@ -44,7 +44,7 @@ class EntdispBrokenEntityDisplay implements EntityDisplayInterface {
    * Array keys and their order must be preserved, although implementations
    * might remove some keys that are empty.
    *
-   * @param string $entity_type
+   * @param string $entityType
    *   E.g. 'node' or 'taxonomy_term'.
    * @param object[] $entities
    *   Entity objects for which to build the render arrays.
@@ -53,7 +53,7 @@ class EntdispBrokenEntityDisplay implements EntityDisplayInterface {
    * @return array[]
    *   An array of render arrays, keyed by the original array keys of $entities.
    */
-  function buildEntities($entity_type, array $entities) {
+  function buildEntities($entityType, array $entities) {
     return array();
   }
 

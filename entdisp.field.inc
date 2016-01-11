@@ -1,4 +1,5 @@
 <?php
+use Drupal\cfrapi\SummaryBuilder\SummaryBuilder_Static;
 
 /**
  * Implements hook_field_formatter_info().
@@ -6,12 +7,12 @@
 function entdisp_field_formatter_info() {
 
   return array(
-    'entdisp_entityreference' => array(
+    ENTDISP_ENTITYREFERENCE_FORMATTER => array(
       'label' => t('Entity display plugin'),
       'description' => t('Display the referenced entities using an entity display plugin.'),
       'field types' => array('entityreference'),
       'settings' => array(
-        'entity_display_plugin' => array(),
+        ENTDISP_PLUGIN_KEY => array(),
       ),
     ),
   );
@@ -31,14 +32,17 @@ function entdisp_field_formatter_info() {
  * @see entityreference_field_formatter_settings_form()
  */
 function entdisp_field_formatter_settings_form(array $field, array $instance, $view_mode, $form, &$form_state) {
+
+  if (FALSE) unset($form, $form_state);  // Ignore IDE "Unused parameter" warning.
+
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
   $target_type = $field['settings']['target_type'];
 
   $element = array();
 
-  if ($display['type'] == 'entdisp_entityreference') {
-    $element['entity_display_plugin'] = entdisp()->etGetDisplayManager($target_type)->confGetForm($settings['entity_display_plugin']);
+  if ($display['type'] == ENTDISP_ENTITYREFERENCE_FORMATTER) {
+    $element[ENTDISP_PLUGIN_KEY] = entdisp()->etGetDisplayManager($target_type)->confGetForm($settings[ENTDISP_PLUGIN_KEY], t('Entity display'));
   }
 
   return $element;
@@ -60,8 +64,8 @@ function entdisp_field_formatter_settings_summary($field, $instance, $view_mode)
   $settings = $display['settings'];
   $target_type = $field['settings']['target_type'];
 
-  if ($display['type'] === 'entdisp_entityreference') {
-    return entdisp()->etGetDisplayManager($target_type)->confGetSummary($settings['entity_display_plugin']);
+  if ($display['type'] === ENTDISP_ENTITYREFERENCE_FORMATTER) {
+    return entdisp()->etGetDisplayManager($target_type)->confGetSummary($settings[ENTDISP_PLUGIN_KEY], new SummaryBuilder_Static());
   }
 
   return NULL;
@@ -91,7 +95,7 @@ function entdisp_field_formatter_settings_summary($field, $instance, $view_mode)
  */
 function entdisp_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, &$items, $displays) {
   $display = reset($displays);
-  if ($display['type'] === 'entdisp_entityreference') {
+  if ($display['type'] === ENTDISP_ENTITYREFERENCE_FORMATTER) {
     entityreference_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, $items, $displays);
   }
 }
@@ -123,6 +127,8 @@ function entdisp_field_formatter_prepare_view($entity_type, $entities, $field, $
  */
 function entdisp_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
 
+  if (FALSE) unset($entity, $langcode, $instance);  // Ignore IDE "Unused parameter" warning.
+
   $settings = $display['settings'];
   $target_type = $field['settings']['target_type'];
 
@@ -135,8 +141,8 @@ function entdisp_field_formatter_view($entity_type, $entity, $field, $instance, 
 
   switch ($display['type']) {
 
-    case 'entdisp_entityreference':
-      $display = entdisp()->etGetDisplayManager($entity_type)->confGetEntityDisplay($settings['entity_display_plugin']);
+    case ENTDISP_ENTITYREFERENCE_FORMATTER:
+      $display = entdisp()->etGetDisplayManager($entity_type)->confGetEntityDisplay($settings[ENTDISP_PLUGIN_KEY]);
       $target_entities = array();
       foreach ($items as $delta => $item) {
         $target_entities[$delta] = $item['entity'];
