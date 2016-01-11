@@ -4,19 +4,27 @@ namespace Drupal\entdisp\Hub;
 interface EntdispHubInterface {
 
   /**
+   * @return \Drupal\entdisp\Hub\EntdispHubInterface
+   */
+  function optional();
+
+  /**
+   * @return \Drupal\entdisp\EntdispConfigurator\EntdispConfiguratorInterface
+   */
+  function getGenericDisplayManager();
+
+  /**
    * @param string $entityType
-   * @param bool $required
    *
    * @return \Drupal\entdisp\EntdispConfigurator\EntdispConfiguratorInterface
    */
-  function etGetDisplayManager($entityType, $required = TRUE);
+  function etGetDisplayManager($entityType);
 
   /**
    * @param string $entityType
    * @param string $bundleName
-   * @param bool $required
    *
-   * @return \Drupal\entdisp\EntdispConfigurator\EntdispConfigurator|\Drupal\entdisp\EntdispConfigurator\EntdispConfiguratorInterface
+   * @return \Drupal\entdisp\EntdispConfigurator\EntdispConfiguratorInterface
    */
-  function etBundleGetDisplayManager($entityType, $bundleName, $required = TRUE);
+  function etBundleGetDisplayManager($entityType, $bundleName);
 }
