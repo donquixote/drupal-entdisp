@@ -39,6 +39,9 @@ function _entdisp_ctools_content_type_edit_form(array $form, array  &$form_state
   elseif (isset($form_state['input'][ENTDISP_PLUGIN_KEY])) {
     $conf = $form_state['input'][ENTDISP_PLUGIN_KEY];
   }
+  elseif (isset($form_state['conf'][ENTDISP_PLUGIN_KEY])) {
+    $conf = $form_state['conf'][ENTDISP_PLUGIN_KEY];
+  }
   else {
     $conf = array();
   }
