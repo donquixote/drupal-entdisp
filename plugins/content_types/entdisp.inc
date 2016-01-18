@@ -90,8 +90,12 @@ function _entdisp_ctools_content_type_render($subtype, $conf, $args, $context = 
     return NULL;
   }
 
+  if (!isset($conf[ENTDISP_PLUGIN_KEY])) {
+    return NULL;
+  }
+
   $displayManager = entdisp()->etGetDisplayManager($entityType);
-  $entityDisplay = $displayManager->confGetEntityDisplay($conf);
+  $entityDisplay = $displayManager->confGetEntityDisplay($conf[ENTDISP_PLUGIN_KEY]);
 
   $block = new \stdClass();
   $block->content = $entityDisplay->buildEntity($entityType, $entity);
