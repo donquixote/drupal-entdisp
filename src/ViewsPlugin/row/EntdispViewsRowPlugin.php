@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\entdisp\CtoolsPlugin\views\row;
+namespace Drupal\entdisp\ViewsPlugin\row;
 
 use Drupal\cfrapi\SummaryBuilder\SummaryBuilder_Static;
 

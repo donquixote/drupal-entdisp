@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\entdisp\CtoolsPlugin\views\field;
+namespace Drupal\entdisp\ViewsPlugin\field;
 
 use Drupal\entdisp\Util\EntityUtil;
 

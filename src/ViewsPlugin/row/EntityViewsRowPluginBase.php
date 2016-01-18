@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\entdisp\CtoolsPlugin\views\row;
+namespace Drupal\entdisp\ViewsPlugin\row;
 
 /**
  * @see \entity_views_plugin_row_entity_view

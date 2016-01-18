@@ -27,7 +27,7 @@ function entdisp_views_plugins() {
       'entdisp' => array(
         'title' => t('Entity display plugin'),
         'help' => t('Renders the entity with one of the available entity display plugins.'),
-        'handler' => \Drupal\entdisp\CtoolsPlugin\views\row\EntdispViewsRowPlugin::class,
+        'handler' => \Drupal\entdisp\ViewsPlugin\row\EntdispViewsRowPlugin::class,
         'uses fields' => FALSE,
         'uses options' => TRUE,
         'type' => 'normal',
@@ -57,7 +57,7 @@ function entdisp_views_data_alter(array &$data) {
         'The @entity-type of the current relationship rendered using an entity display plugin.',
         array('@entity-type' => $info['label'])),
       'field' => array(
-        'handler' => \Drupal\entdisp\CtoolsPlugin\views\field\EntdispViewsFieldHandler::class,
+        'handler' => \Drupal\entdisp\ViewsPlugin\field\EntdispViewsFieldHandler::class,
         'type' => $entity_type,
         // The EntityFieldHandlerHelper treats the 'entity object' data
         // selector as special case for loading the base entity.
