@@ -51,6 +51,13 @@ function _entdisp_ctools_content_type_edit_form(array $form, array  &$form_state
 }
 
 /**
+* Submit function, note anything in the formstate[conf] automatically gets saved
+*/
+function _entdisp_ctools_content_type_edit_form_submit(&$form, &$form_state) {
+  $form_state['conf'][ENTDISP_PLUGIN_KEY] = $form_state['values'][ENTDISP_PLUGIN_KEY];
+}
+
+/**
  * @param $subtype
  * @param $conf
  * @param $args
