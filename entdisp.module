@@ -19,6 +19,26 @@ function entdisp_views_api() {
 }
 
 /**
+ * Implements hook_ctools_plugin_directory().
+ *
+ * @param string $owner
+ *   The system name of the module owning the plugin type for which a base
+ *   directory location is being requested.
+ * @param string $plugin_type
+ *   The name of the plugin type for which a base directory is being requested.
+ *
+ * @return string|null
+ *   The path where CTools' plugin system should search for plugin files,
+ *   relative to your module's root. Omit leading and trailing slashes.
+ */
+function entdisp_ctools_plugin_directory($owner, $plugin_type) {
+  if ('ctools' === $owner && 'content_types' === $plugin_type) {
+    return 'plugins/content_types';
+  }
+  return NULL;
+}
+
+/**
  * Dependency injection container
  *
  * @return \Drupal\entdisp\Hub\EntdispHubInterface
