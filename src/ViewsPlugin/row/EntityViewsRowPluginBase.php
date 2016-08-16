@@ -30,7 +30,7 @@ abstract class EntityViewsRowPluginBase extends \views_plugin_row {
     // Set base table and field information as used by views_plugin_row to
     // select the entity id if used with default query class.
     $info = entity_get_info($this->entityType);
-    if (!empty($info['base table']) && $info['base table'] == $this->view->base_table) {
+    if (!empty($info['base table']) && $info['base table'] === $this->view->base_table) {
       // The base class, \views_plugin_row, does not properly declare all properties.
       /** @noinspection PhpUndefinedFieldInspection */
       $this->base_table = $info['base table'];

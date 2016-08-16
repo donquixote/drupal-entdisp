@@ -44,7 +44,7 @@ function entdisp_field_formatter_settings_form(
 
   $element = array();
 
-  if ($display['type'] == ENTDISP_ENTITYREFERENCE_FORMATTER) {
+  if ($display['type'] === ENTDISP_ENTITYREFERENCE_FORMATTER) {
     $element[ENTDISP_PLUGIN_KEY] = entdisp()->etGetDisplayManager($target_type)->confGetForm($settings[ENTDISP_PLUGIN_KEY], t('Entity display'));
   }
 
