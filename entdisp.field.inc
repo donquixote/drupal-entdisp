@@ -31,10 +31,13 @@ function entdisp_field_formatter_info() {
  *
  * @see entityreference_field_formatter_settings_form()
  */
-function entdisp_field_formatter_settings_form(array $field, array $instance, $view_mode, $form, &$form_state) {
-
-  if (FALSE) unset($form, $form_state);  // Ignore IDE "Unused parameter" warning.
-
+function entdisp_field_formatter_settings_form(
+  array $field,
+  array $instance,
+  $view_mode,
+  /** @noinspection PhpUnusedParameterInspection */ $form,
+  /** @noinspection PhpUnusedParameterInspection */ &$form_state
+) {
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
   $target_type = $field['settings']['target_type'];
@@ -125,10 +128,15 @@ function entdisp_field_formatter_prepare_view($entity_type, $entities, $field, $
  *   A renderable array for the $items, as an array of child elements keyed
  *   by numeric indexes starting from 0.
  */
-function entdisp_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
-
-  if (FALSE) unset($entity, $langcode, $instance);  // Ignore IDE "Unused parameter" warning.
-
+function entdisp_field_formatter_view(
+  $entity_type,
+  /** @noinspection PhpUnusedParameterInspection */ $entity,
+  $field,
+  /** @noinspection PhpUnusedParameterInspection */ $instance,
+  /** @noinspection PhpUnusedParameterInspection */ $langcode,
+  $items,
+  $display
+) {
   $settings = $display['settings'];
   $target_type = $field['settings']['target_type'];
 
