@@ -150,12 +150,12 @@ function entdisp_field_formatter_view(
   switch ($display['type']) {
 
     case ENTDISP_ENTITYREFERENCE_FORMATTER:
-      $display = entdisp()->etGetDisplayManager($entity_type)->confGetEntityDisplay($settings[ENTDISP_PLUGIN_KEY]);
+      $entity_display = entdisp()->etGetDisplayManager($entity_type)->confGetEntityDisplay($settings[ENTDISP_PLUGIN_KEY]);
       $target_entities = array();
       foreach ($items as $delta => $item) {
         $target_entities[$delta] = $item['entity'];
       }
-      return $display->buildEntities($target_type, $target_entities);
+      return $entity_display->buildEntities($target_type, $target_entities);
   }
 
   return array();
