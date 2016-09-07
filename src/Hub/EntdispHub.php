@@ -6,7 +6,7 @@ namespace Drupal\entdisp\Hub;
 use Drupal\cfrapi\Context\CfrContextInterface;
 use Drupal\cfrreflection\CfrGen\InterfaceToConfigurator\InterfaceToConfiguratorInterface;
 use Drupal\entdisp\EntdispConfigurator\EntdispConfigurator;
-use Drupal\etcfrcontext\EtPluginHubInterface;
+use Drupal\etcfrcontext\EtCfrContextHubInterface;
 use Drupal\renderkit\EntityDisplay\EntityDisplayInterface;
 
 class EntdispHub implements EntdispHubInterface {
@@ -17,7 +17,7 @@ class EntdispHub implements EntdispHubInterface {
   private $interfaceToConfigurator;
 
   /**
-   * @var \Drupal\etcfrcontext\EtPluginHubInterface
+   * @var \Drupal\etcfrcontext\EtCfrContextHubInterface
    */
   private $etPluginHub;
 
@@ -50,10 +50,10 @@ class EntdispHub implements EntdispHubInterface {
 
   /**
    * @param \Drupal\cfrreflection\CfrGen\InterfaceToConfigurator\InterfaceToConfiguratorInterface $interfaceToConfigurator
-   * @param \Drupal\etcfrcontext\EtPluginHubInterface $etPluginHub
+   * @param \Drupal\etcfrcontext\EtCfrContextHubInterface $etPluginHub
    * @param bool $required
    */
-  function __construct(InterfaceToConfiguratorInterface $interfaceToConfigurator, EtPluginHubInterface $etPluginHub, $required = TRUE) {
+  function __construct(InterfaceToConfiguratorInterface $interfaceToConfigurator, EtCfrContextHubInterface $etPluginHub, $required = TRUE) {
     $this->interfaceToConfigurator = $interfaceToConfigurator;
     $this->etPluginHub = $etPluginHub;
     $this->required = $required;
