@@ -54,7 +54,7 @@ class EntdispBrokenEntityDisplay implements EntityDisplayInterface {
    *   An array of render arrays, keyed by the original array keys of $entities.
    */
   public function buildEntities($entityType, array $entities) {
-    return array();
+    return [];
   }
 
   /**
@@ -68,6 +68,6 @@ class EntdispBrokenEntityDisplay implements EntityDisplayInterface {
    * @return array
    */
   public function buildEntity($entity_type, $entity) {
-    return array();
+    return [];
   }
 }

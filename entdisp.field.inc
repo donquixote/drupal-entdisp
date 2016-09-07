@@ -6,16 +6,16 @@ use Drupal\cfrapi\SummaryBuilder\SummaryBuilder_Static;
  */
 function entdisp_field_formatter_info() {
 
-  return array(
-    ENTDISP_ENTITYREFERENCE_FORMATTER => array(
+  return [
+    ENTDISP_ENTITYREFERENCE_FORMATTER => [
       'label' => t('Entity display plugin'),
       'description' => t('Display the referenced entities using an entity display plugin.'),
-      'field types' => array('entityreference'),
-      'settings' => array(
-        ENTDISP_PLUGIN_KEY => array(),
-      ),
-    ),
-  );
+      'field types' => ['entityreference'],
+      'settings' => [
+        ENTDISP_PLUGIN_KEY => [],
+      ],
+    ],
+  ];
 }
 
 /**
@@ -42,7 +42,7 @@ function entdisp_field_formatter_settings_form(
   $settings = $display['settings'];
   $target_type = $field['settings']['target_type'];
 
-  $element = array();
+  $element = [];
 
   if ($display['type'] === ENTDISP_ENTITYREFERENCE_FORMATTER) {
     $element[ENTDISP_PLUGIN_KEY] = entdisp()->etGetDisplayManager($target_type)->confGetForm($settings[ENTDISP_PLUGIN_KEY], t('Entity display'));
@@ -151,12 +151,12 @@ function entdisp_field_formatter_view(
 
     case ENTDISP_ENTITYREFERENCE_FORMATTER:
       $entity_display = entdisp()->etGetDisplayManager($entity_type)->confGetEntityDisplay($settings[ENTDISP_PLUGIN_KEY]);
-      $target_entities = array();
+      $target_entities = [];
       foreach ($items as $delta => $item) {
         $target_entities[$delta] = $item['entity'];
       }
       return $entity_display->buildEntities($target_type, $target_entities);
   }
 
-  return array();
+  return [];
 }

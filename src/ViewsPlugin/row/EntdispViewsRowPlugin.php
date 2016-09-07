@@ -30,7 +30,7 @@ class EntdispViewsRowPlugin extends EntityViewsRowPluginBase {
    */
   public function option_definition() {
     $options = parent::option_definition();
-    $options[ENTDISP_PLUGIN_KEY] = array('default' => array());
+    $options[ENTDISP_PLUGIN_KEY] = ['default' => []];
     return $options;
   }
 
@@ -57,12 +57,12 @@ class EntdispViewsRowPlugin extends EntityViewsRowPluginBase {
 
     // Force the views UI height..
     if (FALSE) {
-      $form['placeholder'] = array(
+      $form['placeholder'] = [
         '#type' => 'container',
-        '#attributes' => array(
+        '#attributes' => [
           'style' => 'min-height: 600px; width: 10px; float: left; margin-right: -10px;',
-        ),
-      );
+        ],
+      ];
     }
 
     $form[ENTDISP_PLUGIN_KEY] = $this->entdispManager->confGetForm($conf, t('Row entity display'));

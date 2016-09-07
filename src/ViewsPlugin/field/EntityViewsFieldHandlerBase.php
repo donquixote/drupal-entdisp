@@ -91,7 +91,7 @@ abstract class EntityViewsFieldHandlerBase extends \views_handler_field {
     // Some views query classes want/allow a third parameter specifying the field name.
     /** @noinspection PhpMethodParametersCountMismatchInspection */
     list($entityType, $entities) = $this->view->query->get_result_entities($rows, $relationship, $field_alias);
-    return array($entityType, $entities);
+    return [$entityType, $entities];
   }
 
   /**

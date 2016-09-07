@@ -13,9 +13,9 @@ require_once __DIR__ . '/entdisp.field.inc';
  * @see entdisp_views_plugins()
  */
 function entdisp_views_api() {
-  return array(
+  return [
     'api' => 3,
-  );
+  ];
 }
 
 /**

@@ -48,7 +48,7 @@ class EntdispViewsFieldHandler extends EntityViewsFieldHandlerBase {
    */
   public function option_definition() {
     $options = parent::option_definition();
-    $options[self::ENTDISP_PLUGIN_KEY] = array('default' => array());
+    $options[self::ENTDISP_PLUGIN_KEY] = ['default' => []];
     return $options;
   }
 

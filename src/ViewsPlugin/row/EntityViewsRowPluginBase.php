@@ -86,7 +86,7 @@ abstract class EntityViewsRowPluginBase extends \views_plugin_row {
   protected function getResultEntities(array $rows) {
     if (empty($this->entityType)) {
       // @todo Show a warning / log to watchdog.
-      return array();
+      return [];
     }
     $relationship = !empty($this->relationship) ? $this->relationship : NULL;
     $field_alias = isset($this->field_alias) ? $this->field_alias : NULL;
@@ -95,11 +95,11 @@ abstract class EntityViewsRowPluginBase extends \views_plugin_row {
     list($entityType, $entities) = $this->view->query->get_result_entities($rows, $relationship, $field_alias);
     if (empty($entityType)) {
       // @todo Show a warning / log to watchdog.
-      return array();
+      return [];
     }
     if ($entityType !== $this->entityType) {
       // @todo Show a warning / log to watchdog.
-      return array();
+      return [];
     }
     return $entities;
   }

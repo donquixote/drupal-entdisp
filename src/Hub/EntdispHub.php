@@ -34,12 +34,12 @@ class EntdispHub implements EntdispHubInterface {
   /**
    * @var \Drupal\entdisp\EntdispConfigurator\EntdispConfiguratorInterface[]
    */
-  private $displayManagersByEt = array();
+  private $displayManagersByEt = [];
 
   /**
    * @var \Drupal\entdisp\EntdispConfigurator\EntdispConfiguratorInterface[]
    */
-  private $displayManagersByEtBundle = array();
+  private $displayManagersByEtBundle = [];
 
   /**
    * @return \Drupal\entdisp\Hub\EntdispHubInterface
