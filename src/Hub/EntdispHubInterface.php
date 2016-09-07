@@ -6,19 +6,19 @@ interface EntdispHubInterface {
   /**
    * @return \Drupal\entdisp\Hub\EntdispHubInterface
    */
-  function optional();
+  public function optional();
 
   /**
    * @return \Drupal\entdisp\EntdispConfigurator\EntdispConfiguratorInterface
    */
-  function getGenericDisplayManager();
+  public function getGenericDisplayManager();
 
   /**
    * @param string $entityType
    *
    * @return \Drupal\entdisp\EntdispConfigurator\EntdispConfiguratorInterface
    */
-  function etGetDisplayManager($entityType);
+  public function etGetDisplayManager($entityType);
 
   /**
    * @param string $entityType
@@ -26,5 +26,5 @@ interface EntdispHubInterface {
    *
    * @return \Drupal\entdisp\EntdispConfigurator\EntdispConfiguratorInterface
    */
-  function etBundleGetDisplayManager($entityType, $bundleName);
+  public function etBundleGetDisplayManager($entityType, $bundleName);
 }

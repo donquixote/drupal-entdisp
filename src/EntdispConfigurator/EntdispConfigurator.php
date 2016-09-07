@@ -17,7 +17,7 @@ class EntdispConfigurator implements EntdispConfiguratorInterface {
    *
    * @return array
    */
-  function confGetForm($conf, $label) {
+  public function confGetForm($conf, $label) {
     $form = $this->decorated->confGetForm($conf, $label);
     $form['plugin_id']['#title'] = t('Entity display plugin');
     return $form;
@@ -28,7 +28,7 @@ class EntdispConfigurator implements EntdispConfiguratorInterface {
    *
    * @return \Drupal\renderkit\EntityDisplay\EntityDisplayInterface
    */
-  function confGetEntityDisplay(array $conf) {
+  public function confGetEntityDisplay(array $conf) {
     $handlerCandidate = $this->decorated->confGetValue($conf);
     if ($handlerCandidate instanceof EntityDisplayInterface) {
       return $handlerCandidate;

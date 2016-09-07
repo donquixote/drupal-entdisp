@@ -20,7 +20,7 @@ class EntityUtil extends UtilBase {
    *
    * @see entity_property_extract_innermost_type()
    */
-  static function entityPropertyExtractInnermostType($type) {
+  public static function entityPropertyExtractInnermostType($type) {
     while (strpos($type, 'list<') === 0 && $type[strlen($type) - 1] === '>') {
       $type = substr($type, 5, -1);
     }

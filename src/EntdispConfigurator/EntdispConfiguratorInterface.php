@@ -11,6 +11,6 @@ interface EntdispConfiguratorInterface extends RawConfiguratorInterface {
    *
    * @return \Drupal\renderkit\EntityDisplay\EntityDisplayInterface
    */
-  function confGetEntityDisplay(array $conf);
+  public function confGetEntityDisplay(array $conf);
 
 }

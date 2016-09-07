@@ -44,7 +44,7 @@ class EntdispHub implements EntdispHubInterface {
   /**
    * @return \Drupal\entdisp\Hub\EntdispHubInterface
    */
-  static function create() {
+  public static function create() {
     return new self(\cfrplugin(), \etcfrcontext());
   }
 
@@ -53,7 +53,7 @@ class EntdispHub implements EntdispHubInterface {
    * @param \Drupal\etcfrcontext\EtCfrContextHubInterface $etPluginHub
    * @param bool $required
    */
-  function __construct(InterfaceToConfiguratorInterface $interfaceToConfigurator, EtCfrContextHubInterface $etPluginHub, $required = TRUE) {
+  public function __construct(InterfaceToConfiguratorInterface $interfaceToConfigurator, EtCfrContextHubInterface $etPluginHub, $required = TRUE) {
     $this->interfaceToConfigurator = $interfaceToConfigurator;
     $this->etPluginHub = $etPluginHub;
     $this->required = $required;
@@ -62,14 +62,14 @@ class EntdispHub implements EntdispHubInterface {
   /**
    * @return \Drupal\entdisp\Hub\EntdispHubInterface
    */
-  function optional() {
+  public function optional() {
     return new self($this->interfaceToConfigurator, $this->etPluginHub, FALSE);
   }
 
   /**
    * @return \Drupal\entdisp\EntdispConfigurator\EntdispConfiguratorInterface
    */
-  function getGenericDisplayManager() {
+  public function getGenericDisplayManager() {
     return NULL !== $this->genericDisplayManager
       ? $this->genericDisplayManager
       : $this->genericDisplayManager = $this->contextCreateDisplayManager(NULL);
@@ -80,7 +80,7 @@ class EntdispHub implements EntdispHubInterface {
    *
    * @return \Drupal\entdisp\EntdispConfigurator\EntdispConfiguratorInterface
    */
-  function etGetDisplayManager($entityType) {
+  public function etGetDisplayManager($entityType) {
     return array_key_exists($entityType, $this->displayManagersByEt)
       ? $this->displayManagersByEt[$entityType]
       : $this->displayManagersByEt[$entityType] = $this->etCreateDisplayManager($entityType);
@@ -92,7 +92,7 @@ class EntdispHub implements EntdispHubInterface {
    *
    * @return \Drupal\entdisp\EntdispConfigurator\EntdispConfigurator|\Drupal\entdisp\EntdispConfigurator\EntdispConfiguratorInterface
    */
-  function etBundleGetDisplayManager($entityType, $bundleName) {
+  public function etBundleGetDisplayManager($entityType, $bundleName) {
     $key = $entityType . ':' . $bundleName;
     return array_key_exists($key, $this->displayManagersByEtBundle)
       ? $this->displayManagersByEtBundle[$key]

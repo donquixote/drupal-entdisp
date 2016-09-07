@@ -14,7 +14,7 @@ class EntdispBrokenEntityDisplay implements EntityDisplayInterface {
   /**
    * @return static
    */
-  static function create() {
+  public static function create() {
     return new static();
   }
 
@@ -53,7 +53,7 @@ class EntdispBrokenEntityDisplay implements EntityDisplayInterface {
    * @return array[]
    *   An array of render arrays, keyed by the original array keys of $entities.
    */
-  function buildEntities($entityType, array $entities) {
+  public function buildEntities($entityType, array $entities) {
     return array();
   }
 
@@ -67,7 +67,7 @@ class EntdispBrokenEntityDisplay implements EntityDisplayInterface {
    *
    * @return array
    */
-  function buildEntity($entity_type, $entity) {
+  public function buildEntity($entity_type, $entity) {
     return array();
   }
 }

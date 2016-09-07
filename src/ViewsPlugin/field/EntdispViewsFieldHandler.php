@@ -83,7 +83,7 @@ class EntdispViewsFieldHandler extends EntityViewsFieldHandlerBase {
   /**
    * Returns the summary of the settings in the display.
    */
-  function summary_title() {
+  public function summary_title() {
     return $this->getEntdispManager()->confGetSummary($this->options[self::ENTDISP_PLUGIN_KEY], new SummaryBuilder_Static());
   }
 

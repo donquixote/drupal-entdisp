@@ -38,7 +38,7 @@ abstract class EntityViewsFieldHandlerBase extends \views_handler_field {
    */
   abstract protected function initEntityType($entityType);
 
-  function query() {
+  public function query() {
     // do nothing -- to override the parent query.
   }
 
@@ -51,7 +51,7 @@ abstract class EntityViewsFieldHandlerBase extends \views_handler_field {
    * @param object[] $rows
    *   An array of all objects returned from the query.
    */
-  function pre_render(&$rows) {
+  public function pre_render(&$rows) {
     /**
      * @var string $entityType
      * @var object[] $entities
@@ -99,7 +99,7 @@ abstract class EntityViewsFieldHandlerBase extends \views_handler_field {
    *
    * @return string
    */
-  function render($row) {
+  public function render($row) {
     /** @noinspection PhpUndefinedFieldInspection */
     return isset($row->entdisp_field_builds[$this->position])
       ? drupal_render($row->entdisp_field_builds[$this->position])
