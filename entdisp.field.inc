@@ -10,7 +10,7 @@ function entdisp_field_formatter_info() {
     ENTDISP_ENTITYREFERENCE_FORMATTER => [
       'label' => t('Entity display plugin'),
       'description' => t('Display the referenced entities using an entity display plugin.'),
-      'field types' => ['entityreference'],
+      'field types' => ['entityreference', 'taxonomy_term_reference', 'paragraphs', 'field_collection'],
       'settings' => [
         ENTDISP_PLUGIN_KEY => [],
       ],
@@ -41,6 +41,8 @@ function entdisp_field_formatter_settings_form(
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
   $target_type = $field['settings']['target_type'];
+
+  // @todo Grab settings from $form_state?
 
   $element = [];
 
@@ -97,9 +99,29 @@ function entdisp_field_formatter_settings_summary($field, $instance, $view_mode)
  * @see entityreference_field_formatter_prepare_view()
  */
 function entdisp_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, &$items, $displays) {
+
   $display = reset($displays);
+
   if ($display['type'] === ENTDISP_ENTITYREFERENCE_FORMATTER) {
-    entityreference_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, $items, $displays);
+
+    switch ($field['type']) {
+
+      case 'entityreference':
+        entityreference_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, $items, $displays);
+        break;
+
+      case 'taxonomy_term_reference':
+        taxonomy_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, $items, $displays);
+        break;
+
+      case 'paragraphs':
+        // Does not have a prepare_view step.
+        break;
+
+      case 'field_collection':
+        // Does not have a prepare_view step.
+        break;
+    }
   }
 }
 
@@ -137,26 +159,73 @@ function entdisp_field_formatter_view(
   $items,
   $display
 ) {
+  if (ENTDISP_ENTITYREFERENCE_FORMATTER !== $display['type']) {
+    return [];
+  }
+
+  if ([] === $items) {
+    return [];
+  }
+
   $settings = $display['settings'];
-  $target_type = $field['settings']['target_type'];
 
-  // Rebuild the items list to contain only those with access.
-  foreach ($items as $key => $item) {
-    if (empty($item['access'])) {
-      unset($items[$key]);
-    }
-  }
+  $target_entities = [];
 
-  switch ($display['type']) {
+  switch ($field['type']) {
 
-    case ENTDISP_ENTITYREFERENCE_FORMATTER:
-      $entity_display = entdisp()->etGetDisplayManager($entity_type)->confGetEntityDisplay($settings[ENTDISP_PLUGIN_KEY]);
-      $target_entities = [];
+    case 'entityreference':
+      /* @see entityreference_field_formatter_view() */
+      $target_type = $field['settings']['target_type'];
       foreach ($items as $delta => $item) {
-        $target_entities[$delta] = $item['entity'];
+        if (!empty($item['access']) && !empty($item['entity'])) {
+          $target_entities[$delta] = $item['entity'];
+        }
       }
-      return $entity_display->buildEntities($target_type, $target_entities);
+      break;
+
+    case 'taxonomy_term_reference':
+      /* @see taxonomy_field_formatter_view() */
+      $target_type = 'taxonomy_term';
+      foreach ($items as $delta => $item) {
+        if (!empty($item['taxonomy_term'])) {
+          $target_entities[$delta] = $item['taxonomy_term'];
+        }
+      }
+      break;
+
+    case 'paragraphs':
+      /* @see paragraphs_field_formatter_view() */
+      $target_type = 'paragraphs_item';
+      foreach ($items as $delta => $item) {
+        if ($paragraph = paragraphs_field_get_entity($item)) {
+          $paragraph->setHostEntity($entity_type, $entity, $langcode);
+          if (entity_access('view', 'paragraphs_item', $paragraph)) {
+            $target_entities[$delta] = $paragraph;
+          }
+        }
+      }
+      break;
+
+    case 'field_collection':
+      /* @see field_collection_field_formatter_view() */
+      $target_type = 'field_collection_item';
+      foreach ($items as $delta => $item) {
+        if ($field_collection = field_collection_field_get_entity($item)) {
+          $target_entities[$delta] = $field_collection;
+        }
+      }
+      break;
+
+    default:
+      return [];
   }
 
-  return [];
+  if ([] === $target_entities) {
+    return [];
+  }
+
+  return entdisp()
+    ->etGetDisplayManager($target_type)
+    ->confGetEntityDisplay($settings[ENTDISP_PLUGIN_KEY])
+    ->buildEntities($target_type, $target_entities);
 }
