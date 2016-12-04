@@ -1,6 +1,7 @@
 <?php
 
 use Drupal\entdisp\Hub\EntdispHub;
+use Drupal\renderkit\EntityDisplay\EntityDisplayInterface;
 
 define('ENTDISP_PLUGIN_KEY', 'entity_display_plugin');
 define('ENTDISP_ENTITYREFERENCE_FORMATTER', 'entdisp_entityreference');
@@ -28,4 +29,53 @@ function entdisp() {
   return isset($hub)
     ? $hub
     : $hub = EntdispHub::create();
+}
+
+/**
+ * Implements hook_element_info().
+ *
+ * @see cfrplugin_element_info()
+ */
+function entdisp_element_info() {
+
+  return [
+    'entdisp' => [
+      '#cfrplugin_interface' => EntityDisplayInterface::class,
+      '#title' => t('Entity display'),
+      '#input' => TRUE,
+      /* @see _entdisp_element_process() */
+      '#process' => ['_entdisp_element_process'],
+      /* @see _cfrplugin_element_value() */
+      '#value_callback' => '_cfrplugin_element_value',
+      '#cfrplugin_context' => NULL,
+      '#entity_type' => NULL,
+      '#bundle' => NULL,
+      /* @see _cfrplugin_element_pre_render() */
+      '#pre_render' => ['_cfrplugin_element_pre_render'],
+    ],
+  ];
+}
+
+/**
+ * @param array $element
+ * @param array $form_state
+ * @param array $form
+ *
+ * @return array
+ */
+function _entdisp_element_process(array $element, array &$form_state, array &$form) {
+
+  if (NULL === $element['#entity_type']) {
+    $context = NULL;
+  }
+  elseif (NULL === $element['#bundle']) {
+    $context = etcfrcontext()->etGetContext($element['#entity_type']);
+  }
+  else {
+    $context = etcfrcontext()->etBundleGetContext($element['#entity_type'], $element['#bundle']);
+  }
+
+  $element['#cfrplugin_context'] = $context;
+
+  return _cfrplugin_element_process($element, $form_state, $form);
 }
