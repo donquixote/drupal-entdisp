@@ -65,17 +65,12 @@ class EntdispViewsFieldHandler extends EntityViewsFieldHandlerBase {
   public function options_form(&$form, &$form_state) {
     parent::options_form($form, $form_state);
 
-    if (isset($form_state['values']['options'][self::ENTDISP_PLUGIN_KEY])) {
-      $conf = $form_state['values']['options'][self::ENTDISP_PLUGIN_KEY];
-    }
-    elseif (isset($form_state['input']['options'][self::ENTDISP_PLUGIN_KEY])) {
-      $conf = $form_state['input']['options'][self::ENTDISP_PLUGIN_KEY];
-    }
-    else {
-      $conf = $this->options[self::ENTDISP_PLUGIN_KEY];
-    }
-
-    $form[self::ENTDISP_PLUGIN_KEY] = $this->getEntdispManager()->confGetForm($conf, t('Entity display'));
+    $form[self::ENTDISP_PLUGIN_KEY] = [
+      '#type' => 'entdisp',
+      '#title' => t('Entity display'),
+      '#default_value' => $this->options[self::ENTDISP_PLUGIN_KEY],
+      '#entity_type' => $this->fieldEntityType,
+    ];
 
     return $form;
   }

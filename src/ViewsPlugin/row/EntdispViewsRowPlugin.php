@@ -3,6 +3,7 @@
 namespace Drupal\entdisp\ViewsPlugin\row;
 
 use Drupal\cfrapi\SummaryBuilder\SummaryBuilder_Static;
+use Drupal\renderkit\EntityDisplay\EntityDisplayInterface;
 
 class EntdispViewsRowPlugin extends EntityViewsRowPluginBase {
 
@@ -10,6 +11,11 @@ class EntdispViewsRowPlugin extends EntityViewsRowPluginBase {
    * @var \Drupal\entdisp\EntdispConfigurator\EntdispConfiguratorInterface
    */
   private $entdispManager;
+
+  /**
+   * @var string
+   */
+  private $entdispEntityType;
 
   const ENTDISP_PLUGIN_KEY = 'entity_display_plugin';
 
@@ -22,6 +28,7 @@ class EntdispViewsRowPlugin extends EntityViewsRowPluginBase {
    */
   protected function initEntityType($entityType) {
     $this->entdispManager = entdisp()->etGetDisplayManager($entityType);
+    $this->entdispEntityType = $entityType;
   }
 
   /**
@@ -45,16 +52,6 @@ class EntdispViewsRowPlugin extends EntityViewsRowPluginBase {
   public function options_form(&$form, &$form_state) {
     parent::options_form($form, $form_state);
 
-    if (isset($form_state['values']['row_options'][ENTDISP_PLUGIN_KEY])) {
-      $conf = $form_state['values']['row_options'][ENTDISP_PLUGIN_KEY];
-    }
-    elseif (isset($form_state['input']['row_options'][ENTDISP_PLUGIN_KEY])) {
-      $conf = $form_state['input']['row_options'][ENTDISP_PLUGIN_KEY];
-    }
-    else {
-      $conf = $this->options[ENTDISP_PLUGIN_KEY];
-    }
-
     // Force the views UI height..
     if (FALSE) {
       $form['placeholder'] = [
@@ -65,7 +62,13 @@ class EntdispViewsRowPlugin extends EntityViewsRowPluginBase {
       ];
     }
 
-    $form[ENTDISP_PLUGIN_KEY] = $this->entdispManager->confGetForm($conf, t('Row entity display'));
+    $form[ENTDISP_PLUGIN_KEY] = [
+      /* @see entdisp_element_info() */
+      '#type' => 'entdisp',
+      '#title' => t('Row entity display'),
+      '#default_value' => $this->options[ENTDISP_PLUGIN_KEY],
+      '#entity_type' => $this->entdispEntityType,
+    ];
 
     return $form;
   }

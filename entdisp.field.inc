@@ -47,7 +47,13 @@ function entdisp_field_formatter_settings_form(
   $element = [];
 
   if ($display['type'] === ENTDISP_ENTITYREFERENCE_FORMATTER) {
-    $element[ENTDISP_PLUGIN_KEY] = entdisp()->etGetDisplayManager($target_type)->confGetForm($settings[ENTDISP_PLUGIN_KEY], t('Entity display'));
+    $element[ENTDISP_PLUGIN_KEY] = [
+      /* @see entdisp_element_info() */
+      '#type' => 'entdisp',
+      '#title' => t('Entity display'),
+      '#default_value' => $settings[ENTDISP_PLUGIN_KEY],
+      '#entity_type' => $target_type,
+    ];
   }
 
   return $element;
