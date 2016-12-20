@@ -3,7 +3,6 @@
 namespace Drupal\entdisp\ViewsPlugin\row;
 
 use Drupal\cfrapi\SummaryBuilder\SummaryBuilder_Static;
-use Drupal\renderkit\EntityDisplay\EntityDisplayInterface;
 
 class EntdispViewsRowPlugin extends EntityViewsRowPluginBase {
 
