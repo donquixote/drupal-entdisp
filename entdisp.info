@@ -6,3 +6,5 @@ dependencies[] = xautoload
 dependencies[] = renderkit
 dependencies[] = cfr:cfrplugin
 dependencies[] = etcfrcontext
+; This is required for all entity display plugins to be discovered in renderkit.
+dependencies[] = cfr:cfrplugindiscovery
