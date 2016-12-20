@@ -4,5 +4,5 @@ core = 7.x
 
 dependencies[] = xautoload
 dependencies[] = renderkit
-dependencies[] = cfrplugin
+dependencies[] = cfr:cfrplugin
 dependencies[] = etcfrcontext
