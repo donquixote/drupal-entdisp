@@ -13,7 +13,7 @@ class EntdispConfigurator implements EntdispConfiguratorInterface {
   /**
    * @param array $conf
    *
-   * @param $label
+   * @param string $label
    *
    * @return array
    */
