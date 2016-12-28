@@ -90,7 +90,24 @@ class EntdispViewsFieldHandler extends EntityViewsFieldHandlerBase {
    * A render array for each entity.
    */
   protected function buildMultiple($entityType, array $entities) {
-    $display = $this->getEntdispManager()->confGetEntityDisplay($this->options[self::ENTDISP_PLUGIN_KEY]);
-    return $display->buildEntities($entityType, $entities);
+
+    try {
+      return $this->getEntdispManager()
+        ->confGetEntityDisplay($this->options[self::ENTDISP_PLUGIN_KEY])
+        ->buildEntities($entityType, $entities);
+    }
+    catch (\Exception $e) {
+      watchdog('cfrplugin',
+        'Broken entity display plugin in Views field handler for @view_name/@display_id.'
+        . "\n" . 'Exception message: %message',
+        [
+          '@view_name' => $this->view->name,
+          '@display_id' => $this->view->current_display,
+          '%message' => $e->getMessage(),
+        ],
+        WATCHDOG_WARNING);
+
+      return [];
+    }
   }
 }
