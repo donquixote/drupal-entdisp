@@ -2,9 +2,9 @@
 
 namespace Drupal\entdisp\EntdispConfigurator;
 
-use Drupal\entdisp\EntityDisplay\EntdispBrokenEntityDisplay;
-use Drupal\renderkit\EntityDisplay\EntityDisplayInterface;
+use Drupal\cfrapi\Exception\InvalidConfigurationException;
 use Drupal\cfrapi\RawConfigurator\RawConfigurator_CfrDecoratorTrait;
+use Drupal\renderkit\EntityDisplay\EntityDisplayInterface;
 
 class EntdispConfigurator implements EntdispConfiguratorInterface {
 
@@ -27,12 +27,17 @@ class EntdispConfigurator implements EntdispConfiguratorInterface {
    * @param array $conf
    *
    * @return \Drupal\renderkit\EntityDisplay\EntityDisplayInterface
+   *
+   * @throws \Drupal\cfrapi\Exception\InvalidConfigurationException
    */
   public function confGetEntityDisplay(array $conf) {
+
     $handlerCandidate = $this->decorated->confGetValue($conf);
+
     if ($handlerCandidate instanceof EntityDisplayInterface) {
       return $handlerCandidate;
     }
-    return EntdispBrokenEntityDisplay::create()->setInvalidHandler($handlerCandidate);
+
+    throw new InvalidConfigurationException("The configurator returned something other than an entity display");
   }
 }
