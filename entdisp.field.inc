@@ -230,8 +230,23 @@ function entdisp_field_formatter_view(
     return [];
   }
 
-  return entdisp()
-    ->etGetDisplayManager($target_type)
-    ->confGetEntityDisplay($settings[ENTDISP_PLUGIN_KEY])
-    ->buildEntities($target_type, $target_entities);
+  try {
+    return entdisp()
+      ->etGetDisplayManager($target_type)
+      ->confGetEntityDisplay($settings[ENTDISP_PLUGIN_KEY])
+      ->buildEntities($target_type, $target_entities);
+  }
+  catch (\Exception $e) {
+    watchdog('cfrplugin',
+      'Broken entity display plugin in field formatter for %field at %entity_type %entity_id.'
+      . "\n" . 'Exception message: %message',
+      [
+        '%field' => $field['field_name'],
+        '%entity_type' => $entity_type,
+        '%view_mode' => entity_id($entity_type, $entity),
+      ],
+      WATCHDOG_WARNING);
+
+    return [];
+  }
 }
