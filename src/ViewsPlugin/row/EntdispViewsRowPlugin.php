@@ -87,7 +87,24 @@ class EntdispViewsRowPlugin extends EntityViewsRowPluginBase {
    *   A render array for each entity.
    */
   protected function buildMultiple($entityType, array $entities) {
-    $display = $this->entdispManager->confGetEntityDisplay($this->options[ENTDISP_PLUGIN_KEY]);
-    return $display->buildEntities($entityType, $entities);
+
+    try {
+      return $this->entdispManager
+        ->confGetEntityDisplay($this->options[ENTDISP_PLUGIN_KEY])
+        ->buildEntities($entityType, $entities);
+    }
+    catch (\Exception $e) {
+      watchdog('cfrplugin',
+        'Broken entity display plugin in Views row plugin for @view_name/@display_id.'
+        . "\n" . 'Exception message: %message',
+        [
+          '@view_name' => $this->view->name,
+          '@display_id' => $this->view->current_display,
+          '%message' => $e->getMessage(),
+        ],
+        WATCHDOG_WARNING);
+
+      return [];
+    }
   }
 }
