@@ -4,6 +4,13 @@ namespace Drupal\entdisp\ViewsPlugin\field;
 
 use Drupal\entdisp\Util\EntityUtil;
 
+/**
+ * Some properties are not properly declared in views base classes.
+ *
+ * @property int|null $position
+ *   Index to distinguish this field handler from other field handlers within
+ *   the same view, @see \view::_pre_query().
+ */
 abstract class EntityViewsFieldHandlerBase extends \views_handler_field {
 
   /**
