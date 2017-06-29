@@ -13,19 +13,6 @@ class EntdispConfigurator implements EntdispConfiguratorInterface {
   /**
    * @param array $conf
    *
-   * @param string $label
-   *
-   * @return array
-   */
-  public function confGetForm($conf, $label) {
-    $form = $this->decorated->confGetForm($conf, $label);
-    $form['plugin_id']['#title'] = t('Entity display plugin');
-    return $form;
-  }
-
-  /**
-   * @param array $conf
-   *
    * @return \Drupal\renderkit\EntityDisplay\EntityDisplayInterface
    *
    * @throws \Drupal\cfrapi\Exception\InvalidConfigurationException
