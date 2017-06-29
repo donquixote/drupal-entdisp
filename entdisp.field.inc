@@ -40,13 +40,17 @@ function entdisp_field_formatter_settings_form(
 ) {
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
-  $target_type = $field['settings']['target_type'];
 
   // @todo Grab settings from $form_state?
 
   $element = [];
 
   if ($display['type'] === ENTDISP_ENTITYREFERENCE_FORMATTER) {
+
+    if (NULL === $target_type = _entdisp_reference_field_get_target_type($field)) {
+      return array();
+    }
+
     $element[ENTDISP_PLUGIN_KEY] = [
       /* @see entdisp_element_info() */
       '#type' => 'entdisp',
@@ -73,9 +77,13 @@ function entdisp_field_formatter_settings_form(
 function entdisp_field_formatter_settings_summary($field, $instance, $view_mode) {
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
-  $target_type = $field['settings']['target_type'];
 
   if ($display['type'] === ENTDISP_ENTITYREFERENCE_FORMATTER) {
+
+    if (NULL === $target_type = _entdisp_reference_field_get_target_type($field)) {
+      return NULL;
+    }
+
     return entdisp()->etGetDisplayManager($target_type)->confGetSummary($settings[ENTDISP_PLUGIN_KEY], new SummaryBuilder_Static());
   }
 
@@ -248,5 +256,33 @@ function entdisp_field_formatter_view(
       WATCHDOG_WARNING);
 
     return [];
+  }
+}
+
+/**
+ * @param array $field
+ *   A field definition.
+ *
+ * @return string|null
+ *   The target entity type.
+ */
+function _entdisp_reference_field_get_target_type(array $field) {
+
+  switch ($field['type']) {
+
+    case 'entityreference':
+      return $field['settings']['target_type'];
+
+    case 'taxonomy_term_reference':
+      return 'taxonomy_term';
+
+    case 'paragraphs':
+      return 'paragraphs_item';
+
+    case 'field_collection':
+      return 'field_collection_item';
+
+    default:
+      return NULL;
   }
 }
